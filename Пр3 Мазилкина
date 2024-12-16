@@ -1,0 +1,44 @@
+import random
+from enum import Enum
+
+class TemperatureUnit(Enum):
+    Celsius = 'C'
+    Fahrenheit = 'F'
+    Kelvin = 'K'
+
+cities = ["Абакан", "Сорск", "Усть-Абакан", "Таштып", "Боград", "Копьёво", "Абаза", "Черногорск"]
+
+def get_weather(city):
+    temp_c = round(random.randint(-30, 40), 1)  
+    temp_f = round(temp_c * 9/5 + 32, 1)
+    temp_k = round(temp_c + 273.15, 1)
+    return [f"{temp_c}{TemperatureUnit.Celsius.value}", f"{temp_f}{TemperatureUnit.Fahrenheit.value}", f"{temp_k}{TemperatureUnit.Kelvin.value}"]
+
+def filter_cities(condition):
+    temp_threshold = 0
+    if condition == '+':
+        return list(filter(lambda x: get_weather(x)[0][:-1] > str(temp_threshold), cities))
+    elif condition == '-':
+        return list(filter(lambda x: get_weather(x)[0][:-1] < str(temp_threshold), cities))
+
+def sort_cities(order='asc'):
+    sorted_cities = sorted(cities, key=lambda x: float(get_weather(x)[0][:-1]), reverse=(order == 'desc'))
+    return sorted_cities
+
+ 
+if __name__ == "__main__":
+    print("Текущая погода в городах:")
+    for city in cities:
+        print(f"{city}: {get_weather(city)}")
+    
+    print("\nГорода с температурой выше нуля:")
+    print(filter_cities('+'))
+
+    print("\nГорода с температурой ниже нуля:")
+    print(filter_cities('-'))
+
+    print("\nГорода отсортированные по температуре (возрастание):")
+    print(sort_cities('asc'))
+
+    print("\nГорода отсортированные по температуре (убывание):")
+    print(sort_cities('desc'))
