@@ -1,37 +1,39 @@
-import random
-from enum import Enum
+import random //Импортирует модуль random, который предоставляет функции для генерации случайных чисел.
+from enum import Enum //Импортирует класс Enum из модуля enum, который позволяет создавать перечисления (наборы именованных значений).
 
-class TemperatureUnit(Enum):
-    Celsius = 'C'
-    Fahrenheit = 'F'
-    Kelvin = 'K'
+class TemperatureUnit(Enum): //   Определяет новый класс TemperatureUnit, который является перечислением. В этом классе определены три возможные единицы измерения температуры.
+    Celsius = 'C' // Определяет элемент перечисления для Цельсия.
+    Fahrenheit = 'F' //Определяет элемент перечисления для Фаренгейта.
+    Kelvin = 'K' //Определяет элемент перечисления для Кельвина.
 
-cities = ["Абакан", "Сорск", "Усть-Абакан", "Таштып", "Боград", "Копьёво", "Абаза", "Черногорск"]
+cities = ["Абакан", "Сорск", "Усть-Абакан", "Таштып", "Боград", "Копьёво", "Абаза", "Черногорск"] //Определяет список городов, для которых будет генерироваться информация о погоде. Этот список можно изменять или расширять.
 
-def get_weather(city):
-    temp_c = round(random.randint(-30, 40), 1)  
-    temp_f = round(temp_c * 9/5 + 32, 1)
-    temp_k = round(temp_c + 273.15, 1)
-    return [f"{temp_c}{TemperatureUnit.Celsius.value}", f"{temp_f}{TemperatureUnit.Fahrenheit.value}", f"{temp_k}{TemperatureUnit.Kelvin.value}"]
+def get_weather(city): // Определяет функцию get_weather, которая принимает название города в качестве параметра и возвращает информацию о погоде для этого города.
+    temp_c = round(random.randint(-30, 40), 1)   //: Генерирует случайное целое число от -30 до 40, представляющее температуру в градусах Цельсия, и округляет его до одного знака после запятой.
+    temp_f = round(temp_c * 9/5 + 32, 1)  // Преобразует температуру из Цельсия в Фаренгейт по формуле и округляет до одного знака после запятой.
+    temp_k = round(temp_c + 273.15, 1) //Преобразует температуру из Цельсия в Кельвин по формуле и округляет до одного знака после запятой.
+    return [f"{temp_c}{TemperatureUnit.Celsius.value}", f"{temp_f}{TemperatureUnit.Fahrenheit.value}", f"{temp_k}{TemperatureUnit.Kelvin.value}"] // Возвращает список строк, представляющих температуру в трех единицах измерения (Цельсий, Фаренгейт и Кельвин) с использованием значений из перечисления TemperatureUnit.
 
-def filter_cities(condition):
-    temp_threshold = 0
-    if condition == '+':
-        return list(filter(lambda x: get_weather(x)[0][:-1] > str(temp_threshold), cities))
-    elif condition == '-':
-        return list(filter(lambda x: get_weather(x)[0][:-1] < str(temp_threshold), cities))
+def filter_cities(condition): //Определяет функцию filter_cities, которая принимает строку condition (либо '+', либо '-') для фильтрации городов по температуре.
+    temp_threshold = 0 // Устанавливает пороговое значение температуры, равное 0. Это значение будет использоваться для фильтрации городов.
+    if condition == '+': //Проверяет, выбрал ли пользователь условие для фильтрации городов с температурой выше нуля.
+        return list(filter(lambda x: get_weather(x)[0][:-1] > str(temp_threshold), cities)) // Использует функцию filter для фильтрации списка городов. Для каждого города x вызывается функция get_weather(x), которая возвращает список температур. get_weather(x)[0][:-1] извлекает температуру в Цельсии (строка без последнего символа, который является единицей измерения) и сравнивае
+т её с temp_threshold. Если температура больше нуля, город включается в результирующий список.
+    elif condition == '-': //Проверяет, выбрал ли пользователь условие для фильтрации городов с температурой ниже нуля.
+        return list(filter(lambda x: get_weather(x)[0][:-1] < str(temp_threshold), cities)) //
 
-def sort_cities(order='asc'):
-    sorted_cities = sorted(cities, key=lambda x: float(get_weather(x)[0][:-1]), reverse=(order == 'desc'))
-    return sorted_cities
+def sort_cities(order='asc'): //Определяет функцию sort_cities, которая принимает параметр order, определяющий порядок сортировки (по умолчанию по возрастанию).
+    sorted_cities = sorted(cities, key=lambda x: float(get_weather(x)[0][:-1]), reverse=(order == 'desc')) // Сортирует список cities с использованием функции sorted(). Параметр key указывает, что сортировка будет происходить по температуре (извлекается из результата get_weather(x)), преобразованной в число с плавающей запятой. 
+Параметр reverse устанавливается в True, если порядок сортировки — убывание (если order равно 'desc').
+    return sorted_cities //Возвращает отсортированный список городов
 
  
-if __name__ == "__main__":
-    print("Текущая погода в городах:")
-    for city in cities:
-        print(f"{city}: {get_weather(city)}")
+if __name__ == "__main__": //Проверяет, выполняется ли скрипт как основная программа. Если это так, выполняется следующий блок кода.
+    print("Текущая погода в городах:") //: Выводит заголовок для списка текущей погоды в городах
+    for city in cities: 
+        print(f"{city}: {get_weather(city)}") 
     
-    print("\nГорода с температурой выше нуля:")
+    print("\nГорода с температурой выше нуля:") 
     print(filter_cities('+'))
 
     print("\nГорода с температурой ниже нуля:")
