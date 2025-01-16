@@ -1,0 +1,130 @@
+Задание №1
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget
+from PyQt5.QtCore import Qt  
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Счётчик нажатий")
+        self.setGeometry(100, 100, 300, 200)
+
+      
+        self.count = 0
+
+        
+        self.button = QPushButton("Нажми меня")
+        self.label = QLabel("0")
+        self.label.setAlignment(Qt.AlignCenter)  
+
+     
+        self.button.clicked.connect(self.on_button_clicked)
+
+    
+        layout = QVBoxLayout()
+        layout.addWidget(self.label)
+        layout.addWidget(self.button)
+
+        container = QWidget()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
+
+    def on_button_clicked(self):
+       
+        self.count += 1
+        self.label.setText(str(self.count))
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
+
+Задание №2
+
+import sys
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QLabel, QVBoxLayout,
+    QWidget, QComboBox, QCheckBox, QRadioButton, QButtonGroup
+)
+from PyQt5.QtCore import Qt
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Настройка текста")
+        self.setGeometry(100, 100, 400, 300)
+
+    
+        self.label = QLabel("Настраиваемый текст")
+        self.label.setAlignment(Qt.AlignCenter)
+
+        
+        self.color_combo = QComboBox()
+        self.color_combo.addItems(["Черный", "Красный", "Зеленый", "Синий"])
+        self.color_combo.currentIndexChanged.connect(self.update_text)
+
+        
+        self.bold_checkbox = QCheckBox("Жирный")
+        self.bold_checkbox.stateChanged.connect(self.update_text)
+
+        self.italic_checkbox = QCheckBox("Курсив")
+        self.italic_checkbox.stateChanged.connect(self.update_text)
+
+        
+        self.size_group = QButtonGroup(self)
+        self.size_small = QRadioButton("Маленький")
+        self.size_medium = QRadioButton("Средний")
+        self.size_large = QRadioButton("Большой")
+        self.size_small.setChecked(True)  
+        self.size_group.addButton(self.size_small)
+        self.size_group.addButton(self.size_medium)
+        self.size_group.addButton(self.size_large)
+        self.size_group.buttonClicked.connect(self.update_text)
+
+        
+        layout = QVBoxLayout()
+        layout.addWidget(self.label)
+        layout.addWidget(self.color_combo)
+        layout.addWidget(self.bold_checkbox)
+        layout.addWidget(self.italic_checkbox)
+        layout.addWidget(self.size_small)
+        layout.addWidget(self.size_medium)
+        layout.addWidget(self.size_large)
+
+        container = QWidget()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
+
+        
+        self.update_text()
+
+    def update_text(self):
+        
+        color = self.color_combo.currentText()
+        is_bold = self.bold_checkbox.isChecked()
+        is_italic = self.italic_checkbox.isChecked()
+        size = 12  
+
+        if self.size_small.isChecked():
+            size = 10
+        elif self.size_medium.isChecked():
+            size = 12
+        elif self.size_large.isChecked():
+            size = 16
+
+        
+        font_weight = 'Classica One' if is_bold else 'normal'
+        font_style = 'italic' if is_italic else 'normal'
+
+        self.label.setStyleSheet(f"color: {color}; font-size: {size}px; font-weight: {font_weight}; font-style: {font_style};")
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
+
+
