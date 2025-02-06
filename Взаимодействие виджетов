@@ -1,0 +1,129 @@
+Задание 3
+
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QComboBox, QRadioButton, QVBoxLayout, QPushButton
+
+class UserInfoApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle('User  Information Form')
+
+        #Виджеты
+        self.surname_input = QLineEdit(self)
+        self.name_input = QLineEdit(self)
+        self.patronymic_input = QLineEdit(self)
+        
+        self.city_combo = QComboBox(self)
+        self.city_combo.addItems(['Абакан','Минусинск','Красноярск','Дудинка','Новосибирск','Москва'])
+
+        self.male_radio = QRadioButton('Мужской', self)
+        self.female_radio = QRadioButton('Женский', self)
+
+        self.submit_button = QPushButton('Отправить', self)
+        self.result_label = QLabel('', self)
+        #Макет
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel('Фамилия:'))
+        layout.addWidget(self.surname_input)
+        layout.addWidget(QLabel('Имя:'))
+        layout.addWidget(self.name_input)
+        layout.addWidget(QLabel('Отчество:'))
+        layout.addWidget(self.patronymic_input)
+        layout.addWidget(QLabel('Город проживания:'))
+        layout.addWidget(self.city_combo)
+        layout.addWidget(QLabel('Пол:'))
+        layout.addWidget(self.male_radio)
+        layout.addWidget(self.female_radio)
+        layout.addWidget(self.submit_button)
+        layout.addWidget(self.result_label)
+
+        self.setLayout(layout)
+
+     
+         #сигнал кнопки 
+        self.submit_button.clicked.connect(self.show_info)
+    
+    def show_info(self):
+        surname = self.surname_input.text()
+        name = self.name_input.text()
+        patronymic = self.patronymic_input.text()
+        city = self.city_combo.currentText()
+        gender = 'Мужской' if self.male_radio.isChecked() else 'Женский' if self.female_radio.isChecked() else 'Не указан'
+
+        self.result_label.setText(f'ФИО: {surname} {name} {patronymic}, Город: {city}, Пол: {gender}')
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = UserInfoApp()
+    ex.show()
+    sys.exit(app.exec_())
+
+============================================================================================================================
+Задание 4
+
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QComboBox, QRadioButton, QVBoxLayout
+
+class UserInfoApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle('User  Information Form')
+
+        #Виджеты
+        self.surname_input = QLineEdit(self)
+        self.name_input = QLineEdit(self)
+        self.patronymic_input = QLineEdit(self)
+        
+        self.city_combo = QComboBox(self)
+        self.city_combo.addItems(['Абакан','Минусинск','Красноярск','Дудинка','Новосибирск','Москва'])
+
+        self.male_radio = QRadioButton('Мужской', self)
+        self.female_radio = QRadioButton('Женский', self)
+
+        self.result_label = QLabel('', self)
+
+        #Макет
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel('Фамилия:'))
+        layout.addWidget(self.surname_input)
+        layout.addWidget(QLabel('Имя:'))
+        layout.addWidget(self.name_input)
+        layout.addWidget(QLabel('Отчество:'))
+        layout.addWidget(self.patronymic_input)
+        layout.addWidget(QLabel('Город проживания:'))
+        layout.addWidget(self.city_combo)
+        layout.addWidget(QLabel('Пол:'))
+        layout.addWidget(self.male_radio)
+        layout.addWidget(self.female_radio)
+        layout.addWidget(self.result_label)
+
+        self.setLayout(layout)
+
+        #Сигналы для обновления метки
+        self.surname_input.textChanged.connect(self.update_info)
+        self.name_input.textChanged.connect(self.update_info)
+        self.patronymic_input.textChanged.connect(self.update_info)
+        self.city_combo.currentIndexChanged.connect(self.update_info)
+        self.male_radio.toggled.connect(self.update_info)
+        self.female_radio.toggled.connect(self.update_info)
+
+    def update_info(self):
+        surname = self.surname_input.text()
+        name = self.name_input.text()
+        patronymic = self.patronymic_input.text()
+        city = self.city_combo.currentText()
+        gender = 'Мужской' if self.male_radio.isChecked() else 'Женский' if self.female_radio.isChecked() else 'Не указан'
+
+        self.result_label.setText(f'ФИО: {surname} {name} {patronymic}, Город: {city}, Пол: {gender}')
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = UserInfoApp()
+    ex.show()
+    sys.exit(app.exec_())
