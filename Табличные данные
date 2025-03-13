@@ -1,0 +1,95 @@
+import json
+from PyQt5.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QSpinBox, QLabel, QRadioButton, QHBoxLayout
+
+
+class Weather:
+    def __init__(self, city, temperature, unit):
+        self.city = city
+        self.temperature = temperature
+        self.unit = unit
+
+
+def load_weather_data(json_file):
+    try:
+        with open(json_file, 'r', encoding='utf-8') as file:
+            return [Weather(**item) for item in json.load(file)]
+    except FileNotFoundError:
+        print(f"Файл {json_file} не найден.")
+        return []
+
+
+def display_weather_data(weather_objects):
+    app = QApplication([])
+    window = QWidget()
+    layout = QVBoxLayout()
+
+    threshold_spinbox = QSpinBox()
+    threshold_spinbox.setRange(-100, 100)
+
+    above_radio = QRadioButton("Выше")
+    below_radio = QRadioButton("Ниже")
+    above_radio.setChecked(True) 
+
+    table = QTableWidget(0, 2)
+    table.setHorizontalHeaderLabels(['Город', 'Температура'])
+
+    def update_table():
+        threshold = threshold_spinbox.value()
+        table.setRowCount(0) 
+
+        for weather in weather_objects:
+            if (above_radio.isChecked() and weather.temperature > threshold) or \
+               (below_radio.isChecked() and weather.temperature < threshold):
+                row_position = table.rowCount()
+                table.insertRow(row_position)
+                table.setItem(row_position, 0, QTableWidgetItem(weather.city))
+                table.setItem(row_position, 1, QTableWidgetItem(f"{weather.temperature} °C"))
+
+    threshold_spinbox.valueChanged.connect(update_table)
+    above_radio.toggled.connect(update_table)
+    below_radio.toggled.connect(update_table)
+
+    threshold_layout = QHBoxLayout()
+    threshold_layout.addWidget(QLabel("Порог температуры:"))
+    threshold_layout.addWidget(threshold_spinbox)
+
+    radio_layout = QHBoxLayout()
+    radio_layout.addWidget(above_radio)
+    radio_layout.addWidget(below_radio)
+
+    layout.addLayout(threshold_layout)
+    layout.addLayout(radio_layout)
+    layout.addWidget(table)
+
+    window.setLayout(layout)
+    window.setWindowTitle("Данные о погоде")
+    window.resize(400, 300)
+    window.show()
+    update_table() 
+
+    app.exec_()
+
+
+if __name__ == "__main__":
+    json_data = [
+        {"city": "Москва", "temperature": -5, "unit": "°C"},
+        {"city": "Лондон", "temperature": 8, "unit": "°C"},
+        {"city": "Токио", "temperature": 12, "unit": "°C"},
+        {"city": "Берлин", "temperature": 4, "unit": "°C"},
+        {"city": "Вашингтон", "temperature": 15, "unit": "°C"},
+        {"city": "Париж", "temperature": 6, "unit": "°C"},
+        {"city": "Сидней", "temperature": 22, "unit": "°C"},
+        {"city": "Буэнос-Айрес", "temperature": 26, "unit": "°C"},
+        {"city": "Дубай", "temperature": 31, "unit": "°C"},
+        {"city": "Пекин", "temperature": 2, "unit": "°C"},
+        {"city": "Мехико", "temperature": 18, "unit": "°C"},
+        {"city": "Рим", "temperature": 10, "unit": "°C"},
+        {"city": "Стамбул", "temperature": 9, "unit": "°C"},
+        {"city": "Сеул", "temperature": 3, "unit": "°C"},
+        {"city": "Кейптаун", "temperature": 25, "unit": "°C"}
+    ]
+
+    with open('weather.json', 'w', encoding='utf-8') as f:
+        json.dump(json_data, f, ensure_ascii=False, indent=4)
+
+    display_weather_data(load_weather_data('weather.json'))
