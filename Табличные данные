@@ -1,11 +1,16 @@
 import json
-from PyQt5.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QSpinBox, QLabel, QRadioButton, QHBoxLayout
+from PyQt5.QtWidgets import (
+    QApplication, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QSpinBox, QLabel,
+    QRadioButton, QHBoxLayout, QComboBox
+)
 
 
 class Weather:
-    def __init__(self, city, temperature, unit):
+    def __init__(self, city, avg_temp, min_temp, max_temp, unit):
         self.city = city
-        self.temperature = temperature
+        self.avg_temp = avg_temp
+        self.min_temp = min_temp
+        self.max_temp = max_temp
         self.unit = unit
 
 
@@ -23,70 +28,105 @@ def display_weather_data(weather_objects):
     window = QWidget()
     layout = QVBoxLayout()
 
+    type_label = QLabel("Тип температуры:")
+    type_combo = QComboBox()
+    type_combo.addItems(["Средняя", "Минимальная", "Максимальная"])
+    type_combo.setCurrentIndex(0)
+
     threshold_spinbox = QSpinBox()
     threshold_spinbox.setRange(-100, 100)
-
     above_radio = QRadioButton("Выше")
     below_radio = QRadioButton("Ниже")
-    above_radio.setChecked(True) 
+    above_radio.setChecked(True)
 
-    table = QTableWidget(0, 2)
-    table.setHorizontalHeaderLabels(['Город', 'Температура'])
+    min_temp_spinbox = QSpinBox()
+    min_temp_spinbox.setRange(-100, 100)
+    max_temp_spinbox = QSpinBox()
+    max_temp_spinbox.setRange(-100, 100)
+    min_temp_spinbox.setValue(-100)
+    max_temp_spinbox.setValue(100)
+
+
+    table = QTableWidget(0, 3)
+    table.setHorizontalHeaderLabels(['Город', 'Температура', 'Единица'])
 
     def update_table():
+        
+        table.setRowCount(0)
+
+        temp_type = type_combo.currentText()
         threshold = threshold_spinbox.value()
-        table.setRowCount(0) 
+        is_above = above_radio.isChecked()
+        min_temp = min_temp_spinbox.value()
+        max_temp = max_temp_spinbox.value()
 
         for weather in weather_objects:
-            if (above_radio.isChecked() and weather.temperature > threshold) or \
-               (below_radio.isChecked() and weather.temperature < threshold):
-                row_position = table.rowCount()
-                table.insertRow(row_position)
-                table.setItem(row_position, 0, QTableWidgetItem(weather.city))
-                table.setItem(row_position, 1, QTableWidgetItem(f"{weather.temperature} °C"))
+           
+            if temp_type == "Средняя":
+                temp = weather.avg_temp
+            elif temp_type == "Минимальная":
+                temp = weather.min_temp
+            elif temp_type == "Максимальная":
+                temp = weather.max_temp
 
+            if is_above and temp <= threshold:
+                continue
+            if not is_above and temp >= threshold:
+                continue
+
+            if not (min_temp <= temp <= max_temp):
+                continue
+
+            row_position = table.rowCount()
+            table.insertRow(row_position)
+            table.setItem(row_position, 0, QTableWidgetItem(weather.city))
+            table.setItem(row_position, 1, QTableWidgetItem(str(temp)))
+            table.setItem(row_position, 2, QTableWidgetItem(weather.unit))
+
+    type_combo.currentIndexChanged.connect(update_table)
     threshold_spinbox.valueChanged.connect(update_table)
     above_radio.toggled.connect(update_table)
     below_radio.toggled.connect(update_table)
+    min_temp_spinbox.valueChanged.connect(update_table)
+    max_temp_spinbox.valueChanged.connect(update_table)
+
+    type_layout = QHBoxLayout()
+    type_layout.addWidget(type_label)
+    type_layout.addWidget(type_combo)
 
     threshold_layout = QHBoxLayout()
     threshold_layout.addWidget(QLabel("Порог температуры:"))
     threshold_layout.addWidget(threshold_spinbox)
+    threshold_layout.addWidget(above_radio)
+    threshold_layout.addWidget(below_radio)
 
-    radio_layout = QHBoxLayout()
-    radio_layout.addWidget(above_radio)
-    radio_layout.addWidget(below_radio)
+    range_layout = QHBoxLayout()
+    range_layout.addWidget(QLabel("Минимальная температура:"))
+    range_layout.addWidget(min_temp_spinbox)
+    range_layout.addWidget(QLabel("Максимальная температура:"))
+    range_layout.addWidget(max_temp_spinbox)
 
+    layout.addLayout(type_layout)
     layout.addLayout(threshold_layout)
-    layout.addLayout(radio_layout)
+    layout.addLayout(range_layout)
     layout.addWidget(table)
 
     window.setLayout(layout)
     window.setWindowTitle("Данные о погоде")
-    window.resize(400, 300)
+    window.resize(600, 400)
     window.show()
-    update_table() 
+    update_table()  
 
     app.exec_()
 
 
 if __name__ == "__main__":
     json_data = [
-        {"city": "Москва", "temperature": -5, "unit": "°C"},
-        {"city": "Лондон", "temperature": 8, "unit": "°C"},
-        {"city": "Токио", "temperature": 12, "unit": "°C"},
-        {"city": "Берлин", "temperature": 4, "unit": "°C"},
-        {"city": "Вашингтон", "temperature": 15, "unit": "°C"},
-        {"city": "Париж", "temperature": 6, "unit": "°C"},
-        {"city": "Сидней", "temperature": 22, "unit": "°C"},
-        {"city": "Буэнос-Айрес", "temperature": 26, "unit": "°C"},
-        {"city": "Дубай", "temperature": 31, "unit": "°C"},
-        {"city": "Пекин", "temperature": 2, "unit": "°C"},
-        {"city": "Мехико", "temperature": 18, "unit": "°C"},
-        {"city": "Рим", "temperature": 10, "unit": "°C"},
-        {"city": "Стамбул", "temperature": 9, "unit": "°C"},
-        {"city": "Сеул", "temperature": 3, "unit": "°C"},
-        {"city": "Кейптаун", "temperature": 25, "unit": "°C"}
+        {"city": "Москва", "avg_temp": -5, "min_temp": -10, "max_temp": 0, "unit": "°C"},
+        {"city": "Лондон", "avg_temp": 8, "min_temp": 5, "max_temp": 12, "unit": "°C"},
+        {"city": "Токио", "avg_temp": 12, "min_temp": 10, "max_temp": 15, "unit": "°C"},
+        {"city": "Берлин", "avg_temp": 4, "min_temp": 2, "max_temp": 6, "unit": "°C"},
+        {"city": "Вашингтон", "avg_temp": 15, "min_temp": 10, "max_temp": 20, "unit": "°C"},
     ]
 
     with open('weather.json', 'w', encoding='utf-8') as f:
