@@ -1,0 +1,158 @@
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QApplication, QHeaderView,
+    QPushButton, QLineEdit, QLabel, QStackedWidget, QComboBox
+)
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor, QPalette
+from db import Session
+from models import Student, Group
+
+class MainWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.resize(800, 600)
+
+        # Настройка палитры
+        palette = self.palette()
+        palette.setColor(QPalette.Window, QColor(204, 153, 255))  # цвет фона окна
+        palette.setColor(QPalette.WindowText, Qt.darkMagenta)  # цвет текста
+        self.setPalette(palette)
+
+        # Главный макет
+        self.layout = QVBoxLayout()
+
+        # Создаем QStackedWidget для управления окнами
+        self.stacked_widget = QStackedWidget()
+        self.layout.addWidget(self.stacked_widget)
+
+        # Первое окно: таблица студентов
+        self.table_window = self.create_table_window()
+        self.stacked_widget.addWidget(self.table_window)
+
+        # Второе окно: форма для добавления студента
+        self.add_student_window = self.create_add_student_window()
+        self.stacked_widget.addWidget(self.add_student_window)
+
+        # Устанавливаем первый виджет активным
+        self.stacked_widget.setCurrentIndex(0)
+
+        self.setLayout(self.layout)
+
+    def create_table_window(self):
+        widget = QWidget()
+        layout = QVBoxLayout()
+
+        # Таблица
+        self.table = QTableWidget()
+        self.table.setColumnCount(5)
+        self.table.setHorizontalHeaderLabels(["Фамилия", "Имя", "Отчество", "Пол", "Группа"])
+        header = self.table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.Stretch)  # Фамилия
+        header.setSectionResizeMode(1, QHeaderView.Stretch)  # Имя
+        header.setSectionResizeMode(2, QHeaderView.Stretch)  # Отчество
+        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)  # Пол
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)  # Группа
+        layout.addWidget(self.table)
+
+        # Кнопка для перехода на форму добавления студента
+        add_student_button = QPushButton("Добавить студента")
+        add_student_button.clicked.connect(lambda: self.stacked_widget.setCurrentIndex(1))
+        layout.addWidget(add_student_button)
+
+        widget.setLayout(layout)
+        self.load_data()
+        return widget
+
+    def create_add_student_window(self):
+        widget = QWidget()
+        layout = QVBoxLayout()
+
+        # Форма для ввода данных студента
+        self.last_name_input = QLineEdit()
+        self.first_name_input = QLineEdit()
+        self.middle_name_input = QLineEdit()
+        self.gender_input = QComboBox()  # Выпадающий список для выбора пола
+        self.group_input = QComboBox()  # Выпадающий список для выбора группы
+
+        # Заполнение выпадающего списка для пола
+        self.gender_input.addItem("Мужской", True)
+        self.gender_input.addItem("Женский", False)
+
+        # Заполнение выпадающего списка для групп
+        with Session() as session:
+            groups = session.query(Group).all()
+            for group in groups:
+                self.group_input.addItem(group.name, group.id)
+
+        # Подписи для каждого элемента ввода
+        layout.addWidget(QLabel("Фамилия"))
+        layout.addWidget(self.last_name_input)
+        layout.addWidget(QLabel("Имя"))
+        layout.addWidget(self.first_name_input)
+        layout.addWidget(QLabel("Отчество"))
+        layout.addWidget(self.middle_name_input)
+        layout.addWidget(QLabel("Пол"))
+        layout.addWidget(self.gender_input)
+        layout.addWidget(QLabel("Группа"))
+        layout.addWidget(self.group_input)
+
+        # Кнопка для сохранения данных
+        save_button = QPushButton("Сохранить")
+        save_button.clicked.connect(self.save_student)
+        layout.addWidget(save_button)
+
+        # Кнопка для возврата к таблице
+        back_button = QPushButton("Назад")
+        back_button.clicked.connect(lambda: self.stacked_widget.setCurrentIndex(0))
+        layout.addWidget(back_button)
+
+        widget.setLayout(layout)
+        return widget
+
+    def load_data(self):
+        with Session() as session:
+            self.table.setRowCount(0)
+            students = session.query(Student).all()
+
+            for i, s in enumerate(students):
+                self.table.insertRow(i)
+                self.table.setItem(i, 0, QTableWidgetItem(s.last_name))
+                self.table.setItem(i, 1, QTableWidgetItem(s.first_name))
+                self.table.setItem(i, 2, QTableWidgetItem(s.middle_name))
+
+                if s.gender:
+                    self.table.setItem(i, 3, QTableWidgetItem("Мужской"))
+                else:
+                    self.table.setItem(i, 3, QTableWidgetItem("Женский"))
+
+                self.table.setItem(i, 4, QTableWidgetItem(s.group.name))
+
+    def save_student(self):
+        last_name = self.last_name_input.text()
+        first_name = self.first_name_input.text()
+        middle_name = self.middle_name_input.text()
+        gender = self.gender_input.currentData()  # Получаем значение из QComboBox
+        group_id = self.group_input.currentData()  # Получаем ID выбранной группы
+
+        with Session() as session:
+            # Создаем нового студента
+            new_student = Student(
+                last_name=last_name,
+                first_name=first_name,
+                middle_name=middle_name,
+                gender=gender,
+                group_id=group_id
+            )
+            session.add(new_student)
+            session.commit()
+
+        # Обновляем таблицу и возвращаемся к первому окну
+        self.load_data()
+        self.stacked_widget.setCurrentIndex(0)
+
+
+if __name__ == "__main__":
+    app = QApplication([])
+    window = MainWindow()
+    window.show()
+    app.exec()
