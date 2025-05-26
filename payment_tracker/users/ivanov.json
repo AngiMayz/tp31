@@ -1,0 +1,37 @@
+{
+    "password": "$2b$12$RWoeniqPDvTWQbysXIsA/e7yL7b40dMnfzo8p1.HlpKi6fRMljdLa",
+    "payments": [
+        {
+            "category": "Продукты",
+            "purpose": "Хлеб",
+            "quantity": 2,
+            "price": 30,
+            "total": 60,
+            "date": "2025-04-05 10:23:15"
+        },
+        {
+            "category": "Транспорт",
+            "purpose": "Проездной билет",
+            "quantity": 1,
+            "price": 1200,
+            "total": 1200,
+            "date": "2025-04-05 14:10:00"
+        },
+        {
+            "category": "-Хобби",
+            "purpose": "Здоровье ",
+            "quantity": 1,
+            "price": 1222.0,
+            "total": 1222.0,
+            "date": 2
+        },
+        {
+            "category": "-IT специальность",
+            "purpose": "Изучение специальности",
+            "quantity": 1,
+            "price": 1400.0,
+            "total": 1400.0,
+            "date": 8
+        }
+    ]
+}

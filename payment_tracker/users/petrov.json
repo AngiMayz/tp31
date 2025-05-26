@@ -1,0 +1,29 @@
+{
+  "password": "$2b$12$zYXWvUTSRQPONMLKJIHGFEDCBA987654",
+  "payments": [
+    {
+      "category": "Одежда",
+      "purpose": "Футболка",
+      "quantity": 1,
+      "price": 500,
+      "total": 500,
+      "date": "2025-04-04 16:45:00"
+    },
+    {
+      "category": "Развлечения",
+      "purpose": "Кинотеатр",
+      "quantity": 2,
+      "price": 350,
+      "total": 700,
+      "date": "2025-04-03 20:15:00"
+    },
+    {
+      "category": "Здоровье",
+      "purpose": "Витамины",
+      "quantity": 1,
+      "price": 400,
+      "total": 400,
+      "date": "2025-04-02 09:30:00"
+    }
+  ]
+}

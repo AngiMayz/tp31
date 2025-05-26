@@ -1,0 +1,525 @@
+{
+    "password": "$2b$12$RWoeniqPDvTWQbysXIsA/e7yL7b40dMnfzo8p1.HlpKi6fRMljdLa",
+    "payments": [
+        {
+            "category": "Коммунальные платежи",
+            "purpose": "Квартплата",
+            "quantity": 1,
+            "price": 2964.58,
+            "total": 2964.58,
+            "date": "2016-11-01"
+        },
+        {
+            "category": "Коммунальные платежи",
+            "purpose": "Интернет",
+            "quantity": 1,
+            "price": 450,
+            "total": 450,
+            "date": "2016-11-01"
+        },
+        {
+            "category": "Коммунальные платежи",
+            "purpose": "Телефон",
+            "quantity": 1,
+            "price": 170,
+            "total": 170,
+            "date": "2016-11-01"
+        },
+        {
+            "category": "Коммунальные платежи",
+            "purpose": "Мобильный",
+            "quantity": 1,
+            "price": 300,
+            "total": 300,
+            "date": "2016-11-01"
+        },
+        {
+            "category": "Коммунальные платежи",
+            "purpose": "Электроэнергия",
+            "quantity": 1,
+            "price": 184,
+            "total": 184,
+            "date": "2016-11-01"
+        },
+        {
+            "category": "Коммунальные платежи",
+            "purpose": "Газоснабжение",
+            "quantity": 1,
+            "price": 3120,
+            "total": 3120,
+            "date": "2016-11-01"
+        },
+        {
+            "category": "Коммунальные платежи",
+            "purpose": "Водоснабжение",
+            "quantity": 1,
+            "price": 16.41,
+            "total": 16.41,
+            "date": "2016-11-01"
+        },
+        {
+            "category": "Автомобиль",
+            "purpose": "Взнос за гараж",
+            "quantity": 1,
+            "price": 5000,
+            "total": 5000,
+            "date": "2016-11-30"
+        },
+        {
+            "category": "Автомобиль",
+            "purpose": "Бензин",
+            "quantity": 1,
+            "price": 2238,
+            "total": 2238,
+            "date": "2016-11-30"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Сметана",
+            "quantity": 1,
+            "price": 45,
+            "total": 45,
+            "date": "2016-11-01"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Томатный сок",
+            "quantity": 1,
+            "price": 15,
+            "total": 15,
+            "date": "2016-11-02"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Губка для обуви",
+            "quantity": 1,
+            "price": 40,
+            "total": 40,
+            "date": "2016-11-03"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Еда",
+            "quantity": 1,
+            "price": 159.2,
+            "total": 159.2,
+            "date": "2016-11-04"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Булочки и тесто",
+            "quantity": 1,
+            "price": 240,
+            "total": 240,
+            "date": "2016-11-05"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Творог и сметана",
+            "quantity": 1,
+            "price": 94.96,
+            "total": 94.96,
+            "date": "2016-11-06"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Семечки",
+            "quantity": 2,
+            "price": 35,
+            "total": 70,
+            "date": "2016-11-07"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Хачапури и морс",
+            "quantity": 1,
+            "price": 82,
+            "total": 82,
+            "date": "2016-11-08"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Столовая",
+            "quantity": 1,
+            "price": 119.93,
+            "total": 119.93,
+            "date": "2016-11-09"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Столовая",
+            "quantity": 1,
+            "price": 127.66,
+            "total": 127.66,
+            "date": "2016-11-10"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Еда",
+            "quantity": 1,
+            "price": 258.84,
+            "total": 258.84,
+            "date": "2016-11-11"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Еда",
+            "quantity": 1,
+            "price": 213.31,
+            "total": 213.31,
+            "date": "2016-11-12"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Еда",
+            "quantity": 1,
+            "price": 137.18,
+            "total": 137.18,
+            "date": "2016-11-13"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Еда",
+            "quantity": 1,
+            "price": 127.82,
+            "total": 127.82,
+            "date": "2016-11-14"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Еда",
+            "quantity": 1,
+            "price": 195.39,
+            "total": 195.39,
+            "date": "2016-11-15"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Гипермаркет",
+            "quantity": 1,
+            "price": 3726,
+            "total": 3726,
+            "date": "2016-11-16"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Гипермаркет",
+            "quantity": 1,
+            "price": 2484,
+            "total": 2484,
+            "date": "2016-11-17"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Макароны",
+            "quantity": 1,
+            "price": 33,
+            "total": 33,
+            "date": "2016-11-18"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Еда",
+            "quantity": 1,
+            "price": 144.75,
+            "total": 144.75,
+            "date": "2016-11-19"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Еда",
+            "quantity": 1,
+            "price": 138.73,
+            "total": 138.73,
+            "date": "2016-11-20"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Еда",
+            "quantity": 1,
+            "price": 24,
+            "total": 24,
+            "date": "2016-11-21"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Еда",
+            "quantity": 1,
+            "price": 261.21,
+            "total": 261.21,
+            "date": "2016-11-22"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Столовая",
+            "quantity": 1,
+            "price": 19.42,
+            "total": 19.42,
+            "date": "2016-11-23"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Еда",
+            "quantity": 1,
+            "price": 80,
+            "total": 80,
+            "date": "2016-11-24"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Столовая",
+            "quantity": 1,
+            "price": 58.86,
+            "total": 58.86,
+            "date": "2016-11-25"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Еда",
+            "quantity": 1,
+            "price": 82,
+            "total": 82,
+            "date": "2016-11-26"
+        },
+        {
+            "category": "Питание и быт",
+            "purpose": "Еда",
+            "quantity": 1,
+            "price": 81,
+            "total": 81,
+            "date": "2016-11-27"
+        },
+        {
+            "category": "Медицина",
+            "purpose": "Прием врача",
+            "quantity": 1,
+            "price": 450,
+            "total": 450,
+            "date": "2016-11-01"
+        },
+        {
+            "category": "Медицина",
+            "purpose": "Прием врача",
+            "quantity": 1,
+            "price": 400,
+            "total": 400,
+            "date": "2016-11-03"
+        },
+        {
+            "category": "Медицина",
+            "purpose": "Прием врача",
+            "quantity": 1,
+            "price": 330,
+            "total": 330,
+            "date": "2016-11-05"
+        },
+        {
+            "category": "Медицина",
+            "purpose": "ЭКГ",
+            "quantity": 1,
+            "price": 455,
+            "total": 455,
+            "date": "2016-11-07"
+        },
+        {
+            "category": "Медицина",
+            "purpose": "Анализы",
+            "quantity": 1,
+            "price": 280,
+            "total": 280,
+            "date": "2016-11-09"
+        },
+        {
+            "category": "Медицина",
+            "purpose": "Прием врача",
+            "quantity": 1,
+            "price": 220,
+            "total": 220,
+            "date": "2016-11-11"
+        },
+        {
+            "category": "Медицина",
+            "purpose": "Контейнер для анализов",
+            "quantity": 1,
+            "price": 20,
+            "total": 20,
+            "date": "2016-11-13"
+        },
+        {
+            "category": "Медицина",
+            "purpose": "Лекарства",
+            "quantity": 1,
+            "price": 449.5,
+            "total": 449.5,
+            "date": "2016-11-15"
+        },
+        {
+            "category": "Медицина",
+            "purpose": "Лекарства",
+            "quantity": 1,
+            "price": 202.4,
+            "total": 202.4,
+            "date": "2016-11-17"
+        },
+        {
+            "category": "Медицина",
+            "purpose": "Прием врача",
+            "quantity": 1,
+            "price": 800,
+            "total": 800,
+            "date": "2016-11-19"
+        },
+        {
+            "category": "Медицина",
+            "purpose": "Прием врача",
+            "quantity": 1,
+            "price": 400,
+            "total": 400,
+            "date": "2016-11-21"
+        },
+        {
+            "category": "Медицина",
+            "purpose": "Анализы",
+            "quantity": 1,
+            "price": 1740,
+            "total": 1740,
+            "date": "2016-11-23"
+        },
+        {
+            "category": "Медицина",
+            "purpose": "Термометр для ванн",
+            "quantity": 1,
+            "price": 152.5,
+            "total": 152.5,
+            "date": "2016-11-25"
+        },
+        {
+            "category": "Медицина",
+            "purpose": "Юниспорт",
+            "quantity": 1,
+            "price": 3500,
+            "total": 3500,
+            "date": "2016-11-27"
+        },
+        {
+            "category": "Разное",
+            "purpose": "Туфли",
+            "quantity": 1,
+            "price": 699,
+            "total": 699,
+            "date": "2016-11-01"
+        },
+        {
+            "category": "Разное",
+            "purpose": "Диски, кейс, стяжки",
+            "quantity": 1,
+            "price": 933,
+            "total": 933,
+            "date": "2016-11-04"
+        },
+        {
+            "category": "Разное",
+            "purpose": "Маникюр",
+            "quantity": 1,
+            "price": 550,
+            "total": 550,
+            "date": "2016-11-07"
+        },
+        {
+            "category": "Разное",
+            "purpose": "Ушивание брюк",
+            "quantity": 1,
+            "price": 150,
+            "total": 150,
+            "date": "2016-11-10"
+        },
+        {
+            "category": "Разное",
+            "purpose": "Одежда",
+            "quantity": 1,
+            "price": 2871.84,
+            "total": 2871.84,
+            "date": "2016-11-13"
+        },
+        {
+            "category": "Разное",
+            "purpose": "Плавательный набор",
+            "quantity": 1,
+            "price": 1040,
+            "total": 1040,
+            "date": "2016-11-16"
+        },
+        {
+            "category": "Разное",
+            "purpose": "CD",
+            "quantity": 1,
+            "price": 165,
+            "total": 165,
+            "date": "2016-11-19"
+        },
+        {
+            "category": "Разное",
+            "purpose": "Маркеры",
+            "quantity": 1,
+            "price": 120,
+            "total": 120,
+            "date": "2016-11-22"
+        },
+        {
+            "category": "Разное",
+            "purpose": "Организационный сбор",
+            "quantity": 2,
+            "price": 500,
+            "total": 1000,
+            "date": "2016-11-25"
+        },
+        {
+            "category": "-Еда",
+            "purpose": "Питание",
+            "quantity": 10,
+            "price": 1300.0,
+            "total": 13000.0,
+            "date": "2025-05-26 18:48:10"
+        },
+        {
+            "category": "-Еда",
+            "purpose": "Питание",
+            "quantity": 10,
+            "price": 1300.0,
+            "total": 13000.0,
+            "date": "2025-05-26 18:48:10"
+        },
+        {
+            "category": "-Еда",
+            "purpose": "Питание",
+            "quantity": 10,
+            "price": 1300.0,
+            "total": 13000.0,
+            "date": "2025-05-26 18:48:10"
+        },
+        {
+            "category": "Коммунальные платежи",
+            "purpose": "Электричество",
+            "quantity": 1,
+            "price": 134.0,
+            "total": 134.0,
+            "date": 1
+        },
+        {
+            "category": "-Здоровье",
+            "purpose": "Здоровье",
+            "quantity": 1,
+            "price": 1200.0,
+            "total": 1200.0,
+            "date": 3
+        },
+        {
+            "category": "-IT специальность",
+            "purpose": "Изучение специальности",
+            "quantity": 1,
+            "price": 1200.0,
+            "total": 1200.0,
+            "date": 7
+        }
+    ]
+}

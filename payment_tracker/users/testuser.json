@@ -1,0 +1,45 @@
+{
+  "password": "$2b$12$aBCDefGHiJKLmNOPQRSTuvWXYZ0123456789",
+  "payments": [
+    {
+      "category": "Продукты",
+      "purpose": "Хлеб",
+      "quantity": 2,
+      "price": 30,
+      "total": 60,
+      "date": "2016-11-01"
+    },
+    {
+      "category": "Продукты",
+      "purpose": "Молоко",
+      "quantity": 1,
+      "price": 70,
+      "total": 70,
+      "date": "2016-11-01"
+    },
+    {
+      "category": "Транспорт",
+      "purpose": "Бензин",
+      "quantity": 1,
+      "price": 500,
+      "total": 500,
+      "date": "2016-11-30"
+    },
+    {
+      "category": "Медицина",
+      "purpose": "Анализы",
+      "quantity": 1,
+      "price": 1200,
+      "total": 1200,
+      "date": "2016-11-01"
+    },
+    {
+      "category": "Разное",
+      "purpose": "Книга",
+      "quantity": 1,
+      "price": 450,
+      "total": 450,
+      "date": "2016-11-04"
+    }
+  ]
+}
