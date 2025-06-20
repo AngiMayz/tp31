@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Роли - Emilia Salon</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <ul class="menu">
+      <li><a href="index.html" class="btn">Главная</a></li>
+      <li><a href="services.html" class="btn">Услуги</a></li>
+      <li><a href="roles.html" class="btn">Роли</a></li>
+
+    </ul>
+    <div class="auth-buttons">
+      <a href="login.html" class="btn btn-auth">Войти</a>
+      <a href="register.html" class="btn btn-auth">Регистрация</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <h2>Управление ролями</h2>
+      <button class="btn btn-primary" onclick="toggleForm()">Добавить роль</button>
+
+     
+      <form id="roleForm" style="display: none;" onsubmit="return handleRoleSubmit()">
+        <input type="hidden" id="roleId" />
+        <input type="text" id="roleName" placeholder="Название роли" required />
+        <button type="submit" class="btn btn-test">Сохранить</button>
+        <button type="button" class="btn btn-help" onclick="toggleForm()">Отмена</button>
+      </form>
+
+
+
+  <script>
+    let roles = [];
+
+  
+    function toggleForm() {
+      const form = document.getElementById('roleForm');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    
+    function handleRoleSubmit() {
+      const id = document.getElementById('roleId').value;
+      const name = document.getElementById('roleName').value;
+
+      if (id) {
+       
+        const index = roles.findIndex(role => role.id === parseInt(id));
+        roles[index] = { id: parseInt(id), name };
+      } else {
+        
+        const newRole = {
+          id: roles.length + 1,
+          name
+        };
+        roles.push(newRole);
+      }
+
+      renderRoles();
+      toggleForm();
+      return false;
+    }
+
+    
+    function deleteRole(id) {
+      roles = roles.filter(role => role.id !== id);
+      renderRoles();
+    }
+
+  
+    function editRole(id) {
+      const role = roles.find(role => role.id === id);
+      document.getElementById('roleId').value = role.id;
+      document.getElementById('roleName').value = role.name;
+      toggleForm();
+    }
+
+  
+    function renderRoles() {
+      const tableBody = document.getElementById('rolesTable');
+      tableBody.innerHTML = '';
+      roles.forEach(role => {
+        const row = `
+          <tr>
+            <td>${role.name}</td>
+            <td>
+              <button class="btn btn-auth" onclick="editRole(${role.id})">Редактировать</button>
+              <button class="btn btn-auth" onclick="deleteRole(${role.id})">Удалить</button>
+            </td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+    }
+
+  
+    function sortTable(columnIndex) {
+      roles.sort((a, b) => {
+        const keyA = Object.values(a)[columnIndex];
+        const keyB = Object.values(b)[columnIndex];
+        if (typeof keyA === 'string') return keyA.localeCompare(keyB);
+        return keyA - keyB;
+      });
+      renderRoles();
+    }
+
+ 
+    renderRoles();
+  </script>
+</body>
+</html>

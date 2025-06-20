@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Панель администратора - Emilia Salon</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+</head>
+<body>
+
+  <!-- Шапка -->
+  <header>
+    <ul class="menu">
+      <li><a href="index.html" class="btn">Главная</a></li>
+      <li><a href="services.html" class="btn">Услуги</a></li>
+      <li><a href="#" class="btn admin-only">Акции</a></li>
+      <li><a href="#" class="btn admin-only">Пользователи</a></li>
+      <li><a href="#" class="btn admin-only">SEO</a></li>
+      <li><a href="#" class="btn admin-only">База данных</a></li>
+    </ul>
+    <div class="auth-buttons">
+      <a href="login.html" class="btn btn-auth" id="loginButton">Войти</a>
+      <a href="register.html" class="btn btn-auth" id="registerButton">Регистрация</a>
+    </div>
+  </header>
+
+  <!-- Основной контент -->
+  <main>
+    <section class="section admin-dashboard">
+
+      <!-- Управление акциями и скидками -->
+      <div class="admin-section">
+        <h3>Управление акциями и скидками</h3>
+        <form id="discountForm" onsubmit="handleDiscountSubmit(event)" class="form">
+          <input type="hidden" id="discountId" />
+          <input type="text" id="discountName" placeholder="Название акции" required />
+          <input type="number" id="discountValue" placeholder="Скидка (%)" required />
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+        <table class="section-table">
+          <thead>
+            <tr>
+              <th>Название акции</th>
+              <th>Скидка (%)</th>
+              <th>Действия</th>
+            </tr>
+          </thead>
+          <tbody id="discountsTable"></tbody>
+        </table>
+      </div>
+
+      <!-- Управление подарками -->
+      <div class="admin-section">
+        <h3>Управление подарками</h3>
+        <form id="giftForm" onsubmit="handleGiftSubmit(event)" class="form">
+          <input type="text" id="giftName" placeholder="Название подарка" required />
+          <input type="text" id="giftDescription" placeholder="Описание" required />
+          <button type="submit" class="btn btn-primary">Добавить подарок</button>
+        </form>
+        <ul id="giftsList"></ul>
+      </div>
+
+      <!-- Статистика и аналитика -->
+      <div class="admin-section">
+        <h3>Статистика и аналитика</h3>
+        <canvas id="statisticsChart" width="400" height="150"></canvas>
+        <div class="popular-services">
+          <h4>Популярные услуги:</h4>
+          <ul id="popularServicesList"></ul>
+        </div>
+      </div>
+
+      <!-- SEO Настройки -->
+      <div class="admin-section">
+        <h3>Настройка SEO</h3>
+        <form id="seoForm" onsubmit="handleSeoSubmit(event)" class="form">
+          <input type="text" id="metaTitle" placeholder="Meta Title" required />
+          <input type="text" id="metaDescription" placeholder="Meta Description" required />
+          <input type="text" id="keywords" placeholder="Ключевые слова через запятую" required />
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+      </div>
+
+      <!-- Резервное копирование -->
+      <div class="admin-section">
+        <h3>Резервное копирование базы данных</h3>
+        <button class="btn btn-secondary" onclick="backupDatabase()">Создать резервную копию</button>
+        <p id="backupStatus"></p>
+      </div>
+
+      <!-- Добавление новых услуг -->
+      <div class="admin-section">
+        <h3>Добавить новую услугу</h3>
+        <form id="addServiceForm" onsubmit="addNewService(event)">
+          <input type="text" id="serviceName" placeholder="Название услуги" required />
+          <input type="text" id="servicePrice" placeholder="Цена" required />
+          <input type="text" id="serviceMaster" placeholder="Мастер" required />
+          <textarea id="serviceDescription" placeholder="Описание" required></textarea>
+          <button type="submit" class="btn btn-primary">Добавить услугу</button>
+        </form>
+      </div>
+
+      <!-- Управление ролями -->
+      <div class="admin-section">
+        <h3>Добавить роль пользователя</h3>
+        <form id="roleForm" onsubmit="addRole(event)">
+          <input type="text" id="roleName" placeholder="Название роли" required />
+          <button type="submit" class="btn btn-primary">Добавить роль</button>
+        </form>
+        <ul id="rolesList"></ul>
+      </div>
+
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 Emilia Salon. Все права защищены.
+  </footer>
+
+  <script>
+    // Проверка прав администратора
+    window.onload = function () {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser || currentUser.role !== 'admin') {
+        alert("У вас нет доступа к этой странице.");
+        window.location.href = "index.html";
+      }
+    };
+
+    // === Акции и скидки ===
+    let discounts = [];
+
+    function handleDiscountSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('discountId').value;
+      const name = document.getElementById('discountName').value.trim();
+      const value = document.getElementById('discountValue').value.trim();
+
+      if (id) {
+        const index = discounts.findIndex(d => d.id === parseInt(id));
+        discounts[index] = { id: parseInt(id), name, value };
+      } else {
+        discounts.push({ id: Date.now(), name, value });
+      }
+
+      renderDiscounts();
+      document.getElementById('discountForm').reset();
+      document.getElementById('discountId').value = '';
+    }
+
+    function deleteDiscount(id) {
+      discounts = discounts.filter(d => d.id !== id);
+      renderDiscounts();
+    }
+
+    function editDiscount(id) {
+      const discount = discounts.find(d => d.id === id);
+      document.getElementById('discountId').value = discount.id;
+      document.getElementById('discountName').value = discount.name;
+      document.getElementById('discountValue').value = discount.value;
+    }
+
+    function renderDiscounts() {
+      const tableBody = document.getElementById('discountsTable');
+      tableBody.innerHTML = '';
+      discounts.forEach(discount => {
+        const row = `
+          <tr>
+            <td>${discount.name}</td>
+            <td>${discount.value}%</td>
+            <td>
+              <button class="btn btn-auth" onclick="editDiscount(${discount.id})">Редактировать</button>
+              <button class="btn btn-auth" onclick="deleteDiscount(${discount.id})">Удалить</button>
+            </td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+    }
+
+    // === Подарки ===
+    let gifts = [];
+
+    function handleGiftSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('giftName').value.trim();
+      const description = document.getElementById('giftDescription').value.trim();
+      if (!name || !description) return;
+
+      gifts.push({ id: Date.now(), name, description });
+      document.getElementById('giftForm').reset();
+      renderGifts();
+    }
+
+    function deleteGift(id) {
+      gifts = gifts.filter(g => g.id !== id);
+      renderGifts();
+    }
+
+    function renderGifts() {
+      const list = document.getElementById('giftsList');
+      list.innerHTML = '';
+      gifts.forEach(gift => {
+        const item = `
+          <li>
+            <strong>${gift.name}</strong>: ${gift.description}
+            <button class="btn btn-auth" onclick="deleteGift(${gift.id})">Удалить</button>
+          </li>
+        `;
+        list.innerHTML += item;
+      });
+    }
+
+    // === Статистика ===
+    const ctx = document.getElementById('statisticsChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май'],
+        datasets: [{
+          label: 'Доходы (₽)',
+          data: [5000, 7000, 6000, 8000, 9000],
+          backgroundColor: '#7952BD',
+          borderColor: '#7952BD',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    // Пример популярных услуг
+    const popularServices = [
+      "Женская стрижка",
+      "SPA-педикюр",
+      "Макияж"
+    ];
+    const popularList = document.getElementById('popularServicesList');
+    popularServices.forEach(service => {
+      const li = document.createElement('li');
+      li.textContent = service;
+      popularList.appendChild(li);
+    });
+
+    // === SEO ===
+    function handleSeoSubmit(e) {
+      e.preventDefault();
+      const title = document.getElementById('metaTitle').value.trim();
+      const desc = document.getElementById('metaDescription').value.trim();
+      const keywords = document.getElementById('keywords').value.trim();
+
+      alert(`SEO настройки сохранены:\nMeta Title: ${title}\nMeta Description: ${desc}\nKeywords: ${keywords}`);
+    }
+
+    // === Резервное копирование ===
+    function backupDatabase() {
+      const status = document.getElementById('backupStatus');
+      status.textContent = 'Резервная копия создана успешно!';
+    }
+
+    // === Управление ролями ===
+    let roles = ['user', 'admin'];
+
+    function addRole(e) {
+      e.preventDefault();
+      const roleName = document.getElementById('roleName').value.trim().toLowerCase();
+      if (!roleName || roles.includes(roleName)) return;
+
+      roles.push(roleName);
+      document.getElementById('roleName').value = '';
+      renderRoles();
+    }
+
+    function renderRoles() {
+      const roleList = document.getElementById('rolesList');
+      roleList.innerHTML = '';
+      roles.forEach(role => {
+        const li = document.createElement('li');
+        li.textContent = role;
+        roleList.appendChild(li);
+      });
+    }
+
+    // === Добавление услуг ===
+    function addNewService(e) {
+      e.preventDefault();
+      const name = document.getElementById('serviceName').value.trim();
+      const price = document.getElementById('servicePrice').value.trim();
+      const master = document.getElementById('serviceMaster').value.trim();
+      const desc = document.getElementById('serviceDescription').value.trim();
+
+      if (!name || !price || !master || !desc) return;
+      alert(`Услуга "${name}" добавлена!`);
+      document.getElementById('addServiceForm').reset();
+    }
+
+    // === Инициализация при старте ===
+    window.addEventListener('load', () => {
+      renderDiscounts();
+      renderGifts();
+      renderRoles();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Услуги - Emilia Salon</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <ul class="menu">
+      <li><a href="index.html" class="btn">Главная</a></li>
+      <li><a href="services.html" class="btn">Услуги</a></li>
+      <li><a href="roles.html" class="btn">Роли</a></li>
+
+    </ul>
+    <div class="auth-buttons">
+      <a href="login.html" class="btn btn-auth">Войти</a>
+      <a href="register.html" class="btn btn-auth">Регистрация</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <h2>Управление услугами</h2>
+      <button class="btn btn-primary" onclick="toggleForm()">Добавить услугу</button>
+
+      <form id="serviceForm" style="display: none;" onsubmit="return handleServiceSubmit()">
+        <input type="hidden" id="serviceId" />
+        <input type="text" id="serviceName" placeholder="Название услуги" required />
+        <input type="number" id="servicePrice" placeholder="Цена" required />
+        <input type="text" id="serviceMaterialCosts" placeholder="Затраты материала" />
+        <button type="submit" class="btn btn-secd">Сохранить</button>
+        <button type="button" class="btn btn-help" onclick="toggleForm()">Отмена</button>
+      </form>
+
+
+  <script>
+    let services = [];
+
+    function toggleForm() {
+      const form = document.getElementById('serviceForm');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    
+    function handleServiceSubmit() {
+      const id = document.getElementById('serviceId').value;
+      const name = document.getElementById('serviceName').value;
+      const price = document.getElementById('servicePrice').value;
+      const materialCosts = document.getElementById('serviceMaterialCosts').value;
+
+      if (id) {
+
+        const index = services.findIndex(service => service.id === parseInt(id));
+        services[index] = { id: parseInt(id), name, price, materialCosts };
+      } else {
+     
+        const newService = {
+          id: services.length + 1,
+          name,
+          price,
+          materialCosts
+        };
+        services.push(newService);
+      }
+
+      renderServices();
+      toggleForm();
+      return false;
+    }
+
+    function deleteService(id) {
+      services = services.filter(service => service.id !== id);
+      renderServices();
+    }
+
+
+    function editService(id) {
+      const service = services.find(service => service.id === id);
+      document.getElementById('serviceId').value = service.id;
+      document.getElementById('serviceName').value = service.name;
+      document.getElementById('servicePrice').value = service.price;
+      document.getElementById('serviceMaterialCosts').value = service.materialCosts;
+      toggleForm();
+    }
+
+   
+    function renderServices() {
+      const tableBody = document.getElementById('servicesTable');
+      tableBody.innerHTML = '';
+      services.forEach(service => {
+        const row = `
+          <tr>
+            <td>${service.name}</td>
+            <td>${service.price} ₽</td>
+            <td>${service.materialCosts || '-'}</td>
+            <td>
+              <button class="btn btn-auth" onclick="editService(${service.id})">Редактировать</button>
+              <button class="btn btn-auth" onclick="deleteService(${service.id})">Удалить</button>
+            </td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+    }
+
+  
+    function sortTable(columnIndex) {
+      services.sort((a, b) => {
+        const keyA = Object.values(a)[columnIndex];
+        const keyB = Object.values(b)[columnIndex];
+        if (typeof keyA === 'string') return keyA.localeCompare(keyB);
+        return keyA - keyB;
+      });
+      renderServices();
+    }
+
+    
+    renderServices();
+  </script>
+</body>
+</html>

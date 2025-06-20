@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход - Emilia Salon</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <ul class="menu">
+      <li><a href="index.html" class="btn">Главная</a></li>
+    </ul>
+    <div class="auth-buttons">
+      <a href="login.html" class="btn btn-auth">Войти</a>
+      <a href="register.html" class="btn btn-auth">Регистрация</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <h2>Вход в систему</h2>
+      <form id="loginForm" onsubmit="return handleLogin()" class="form">
+        <input type="text" id="loginUsername" placeholder="Логин" required />
+        <input type="password" id="loginPassword" placeholder="Пароль" required />
+        <button type="submit" class="btn btn-primary">Войти</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    // Пример данных пользователей (можно заменить на базу данных)
+    const users = [
+      { id: 1, name: "Администратор", username: "admin", password: "password", role: "admin" },
+      { id: 2, name: "Клиент", username: "user", password: "password", role: "user" }
+    ];
+
+    function handleLogin() {
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      // Поиск пользователя в массиве
+      const user = users.find(u => u.username === username && u.password === password);
+
+      if (user) {
+        // Сохраняем данные пользователя в localStorage
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        alert(`Добро пожаловать, ${user.name}!`);
+
+        // Перенаправляем в зависимости от роли
+        if (user.role === 'admin') {
+          window.location.href = 'admin.html'; // Для администратора
+        } else {
+          window.location.href = 'user.html'; // Для обычных пользователей
+        }
+      } else {
+        alert('Неверный логин или пароль');
+      }
+
+      // Предотвращаем отправку формы
+      return false;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Личный кабинет - Emilia Salon</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"  integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f8;
+      color: #333;
+    }
+    header {
+      background: linear-gradient(135deg, #d6aefc, #fcd6e3);
+      padding: 2rem 1rem;
+      text-align: center;
+      color: #fff;
+    }
+    .profile-pic {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #fff;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+    header h1 {
+      margin-top: 0.5rem;
+      font-size: 1.8rem;
+    }
+    nav.sidebar {
+      width: 240px;
+      background: #fff;
+      min-height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding: 2rem 1rem;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+    nav.sidebar ul {
+      list-style: none;
+    }
+    nav.sidebar li {
+      margin: 1rem 0;
+    }
+    nav.sidebar a {
+      display: flex;
+      align-items: center;
+      color: #333;
+      text-decoration: none;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+    nav.sidebar a:hover,
+    nav.sidebar a.active {
+      background: #f0f0f0;
+    }
+    nav.sidebar i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+    main {
+      margin-left: 240px;
+      padding: 2rem;
+    }
+    .section {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
+    .section h2 {
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+      color: #555;
+    }
+    .booking-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+    .booking-info {
+      flex-grow: 1;
+    }
+    .booking-actions button,
+    .booking-actions form {
+      margin-left: 10px;
+    }
+    .btn-cancel {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-reschedule {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #fff;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+    @media (max-width: 768px) {
+      nav.sidebar {
+        display: none;
+      }
+      main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Боковое меню -->
+  <nav class="sidebar">
+    <div style="text-align:center; margin-bottom: 2rem;">
+      <img id="userAvatar" src="https://via.placeholder.com/100"  alt="Аватар" class="profile-pic" title="Нажмите, чтобы изменить фото">
+      <h2 id="userName">User</h2>
+    </div>
+    <ul>
+      <li><a href="#" data-tab="profile" class="active"><i class="fas fa-user"></i> Профиль</a></li>
+      <li><a href="#" data-tab="bookings"><i class="fas fa-clock"></i> Мои записи</a></li>
+      <li><a href="#" data-tab="favorites"><i class="fas fa-heart"></i> Избранное</a></li>
+      <li><a href="#" data-tab="security"><i class="fas fa-shield-alt"></i> Безопасность</a></li>
+      <li><a href="#"><i class="fas fa-sign-out-alt"></i> Выйти</a></li>
+          <ul class="menu">
+      <li><a href="index.html" class="btn">Главная</a></li>
+    </ul>
+  </nav>
+
+  <!-- Основной контент -->
+  <main>
+    <header>
+      <img id="headerAvatar" src="https://via.placeholder.com/100"  alt="Аватар" class="profile-pic">
+      <h1 id="headerName">Добро пожаловать, User!</h1>
+      <p>Ваш личный кабинет в Emilia Salon</p>
+    </header>
+
+    <!-- Профиль -->
+    <section id="profile" class="section active">
+      <h2>Редактировать профиль</h2>
+      <div class="edit-profile">
+        <input type="text" id="newName" placeholder="Введите новое имя">
+        <input type="file" id="newPhoto" accept="image/*">
+        <button onclick="updateProfile()">Сохранить изменения</button>
+      </div>
+    </section>
+
+    <!-- Мои записи -->
+    <section id="bookings" class="section hidden">
+      <h2>Мои записи</h2>
+      <div id="bookingsList"></div>
+    </section>
+
+    <!-- Избранное -->
+    <section id="favorites" class="section hidden">
+      <h2>Избранные услуги</h2>
+      <div id="favoritesList"></div>
+      <form class="add-service-form" onsubmit="addFavorite(event)">
+        <input type="text" id="serviceName" placeholder="Название услуги" required>
+        <button type="submit">Добавить</button>
+      </form>
+    </section>
+
+    <!-- Безопасность -->
+    <section id="security" class="section hidden">
+      <h2>Безопасность</h2>
+      <div class="edit-profile">
+        <input type="password" id="oldPassword" placeholder="Старый пароль">
+        <input type="password" id="newPassword" placeholder="Новый пароль">
+        <input type="password" id="confirmPassword" placeholder="Повторите новый пароль">
+        <button onclick="changePassword()">Сменить пароль</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    &copy; 2025 Emilia Salon. Все права защищены.
+  </footer>
+
+  <script>
+    // Переключение между разделами
+    document.querySelectorAll('[data-tab]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const tabId = this.getAttribute('data-tab');
+        document.querySelectorAll('.section').forEach(section => {
+          section.classList.add('hidden');
+        });
+        document.getElementById(tabId).classList.remove('hidden');
+
+        document.querySelectorAll('[data-tab]').forEach(link => {
+          link.classList.remove('active');
+        });
+        this.classList.add('active');
+
+        if (tabId === 'bookings') loadBookings();
+      });
+    });
+
+    // Загрузка данных из localStorage
+    window.onload = () => {
+      const savedName = localStorage.getItem('userName') || 'User';
+      const savedPhoto = localStorage.getItem('userPhoto') || 'https://via.placeholder.com/100'; 
+
+      document.getElementById('userName').textContent = savedName;
+      document.getElementById('headerName').textContent = `Добро пожаловать, ${savedName}!`;
+      document.getElementById('userAvatar').src = savedPhoto;
+      document.getElementById('headerAvatar').src = savedPhoto;
+
+      loadFavorites();
+      loadBookings();
+    };
+
+    // Обновление профиля
+    function updateProfile() {
+      const newName = document.getElementById('newName').value.trim();
+      const photoInput = document.getElementById('newPhoto');
+
+      if (newName !== '') {
+        localStorage.setItem('userName', newName);
+        document.getElementById('userName').textContent = newName;
+        document.getElementById('headerName').textContent = `Добро пожаловать, ${newName}!`;
+      }
+
+      if (photoInput.files && photoInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const photoUrl = e.target.result;
+          localStorage.setItem('userPhoto', photoUrl);
+          document.getElementById('userAvatar').src = photoUrl;
+          document.getElementById('headerAvatar').src = photoUrl;
+        };
+        reader.readAsDataURL(photoInput.files[0]);
+      }
+
+      alert("Профиль обновлён!");
+    }
+
+    // Добавление в избранное
+    function addFavorite(e) {
+      e.preventDefault();
+      const serviceName = document.getElementById('serviceName').value.trim();
+      if (!serviceName) return;
+
+      let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+      favorites.push(serviceName);
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+
+      document.getElementById('serviceName').value = '';
+      loadFavorites();
+    }
+
+    function loadFavorites() {
+      const favoritesList = document.getElementById('favoritesList');
+      favoritesList.innerHTML = '';
+
+      const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+      favorites.forEach((service, index) => {
+        const div = document.createElement('div');
+        div.className = 'favorite-card';
+        div.innerHTML = `
+          <div>${service}</div>
+          <div class="favorite-actions">
+            <button class="btn-remove-favorite" onclick="removeFavorite(${index})">Удалить</button>
+          </div>
+        `;
+        favoritesList.appendChild(div);
+      });
+    }
+
+    function removeFavorite(index) {
+      let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+      favorites.splice(index, 1);
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+      loadFavorites();
+    }
+
+    // Смена пароля
+    function changePassword() {
+      const oldPass = document.getElementById('oldPassword').value;
+      const newPass = document.getElementById('newPassword').value;
+      const confirmPass = document.getElementById('confirmPassword').value;
+      const storedPass = localStorage.getItem('userPassword') || '123456';
+
+      if (oldPass !== storedPass) {
+        alert('Старый пароль неверен.');
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        alert('Пароли не совпадают.');
+        return;
+      }
+
+      localStorage.setItem('userPassword', newPass);
+      alert('Пароль успешно изменён!');
+    }
+
+    // Мои записи
+    let userBookings = [
+      { id: 1, service: 'Стрижка и укладка', date: '25 апреля 2025, 15:00', price: 1500 },
+      { id: 2, service: 'SPA-педикюр', date: '28 апреля 2025, 11:00', price: 2000 }
+    ];
+
+    // Сохраняем в localStorage при первом запуске
+    if (!localStorage.getItem('bookings')) {
+      localStorage.setItem('bookings', JSON.stringify(userBookings));
+    }
+
+    function loadBookings() {
+      const bookingsList = document.getElementById('bookingsList');
+      bookingsList.innerHTML = '';
+
+      const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+
+      bookings.forEach(booking => {
+        const card = document.createElement('div');
+        card.className = 'booking-card';
+
+        const receiptData = `{
+          "Email":"user@example.com",
+          "Phone":"+79001234567",
+          "TaxationSystem":1,
+          "Items":[{
+            "Name":"${booking.service}",
+            "Price":${booking.price * 100},
+            "Quantity":1,
+            "Amount":${booking.price * 100},
+            "PaymentMethod":"full_prepayment",
+            "PaymentObject":"service",
+            "Tax":"vat10"
+          }]
+        `;
+
+        card.innerHTML = `
+          <div class="booking-info">
+            <strong>${booking.service}</strong><br>
+            <small>${booking.date}</small><br>
+            <strong>Цена:</strong> ${booking.price} ₽
+          </div>
+          <div class="booking-actions">
+            <button class="btn-cancel" onclick="cancelBooking(${booking.id})">Отменить</button>
+            <button class="btn-reschedule" onclick="rescheduleBooking(${booking.id})">Перенести</button>
+            <form action="https://securepay.tinkoff.ru/"  method="POST" style="margin-top: 10px;">
+              <input type="hidden" name="terminalkey" value="ВАШ_TERMINAL_KEY" />
+              <input type="hidden" name="amount" value="${booking.price * 100}" /> <!-- копейки -->
+              <input type="hidden" name="order" value="ЗАПИСЬ_${booking.id}" />
+              <input type="hidden" name="description" value="Оплата: ${booking.service}" />
+              <input type="hidden" name="language" value="ru" />
+              <input type="hidden" name="receipt" value='${receiptData.replace(/\s+/g, '')}' />
+              <button type="submit" class="btn btn-primary">Оплатить</button>
+            </form>
+          </div>
+        `;
+        bookingsList.appendChild(card);
+      });
+    }
+
+    function cancelBooking(id) {
+      let bookings = JSON.parse(localStorage.getItem('bookings'));
+      bookings = bookings.filter(b => b.id !== id);
+      localStorage.setItem('bookings', JSON.stringify(bookings));
+      loadBookings();
+    }
+
+    function rescheduleBooking(id) {
+      alert('Вы нажали "Перенести" для записи #' + id);
+      // Здесь можно открыть календарь или отправить на страницу переноса
+    }
+  </script>
+</body>
+</html>

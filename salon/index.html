@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com"> 
+  <link rel="preconnect" href="https://fonts.gstatic.com"  crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Shantell+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Mystery+Quest&display=swap" rel="stylesheet">
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emilia Salon</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Шапка -->
+  <header class="main-header">
+    <ul class="menu">
+      <li><a href="#home" class="btn">Главная</a></li> 
+      <li><a href="#about" class="btn">О нас</a></li>
+      <li><a href="#services" class="btn">Услуги</a></li>
+      <li><a href="#reviews" class="btn">Отзывы</a></li>
+      <li><a href="#portfolio" class="btn">Наши работы</a></li>
+      <li><a href="#prices" class="btn">Цены</a></li>
+      <li><a href="#contacts" class="btn">Контакты</a></li>
+    </ul>
+
+    <div class="auth-buttons">
+      <a href="login.html" id="loginButton" class="btn btn-auth">Войти</a>
+      <a href="register.html" id="registerButton" class="btn btn-auth">Регистрация</a>
+      <a href="#" id="logoutButton" class="btn btn-auth hidden">Выйти</a>
+      <a href="#booking" class="btn btn-primary">ЗАПИСАТЬСЯ В САЛОН</a>
+    </div>
+  </header>
+
+  <!-- Основной контент -->
+  <main>
+    <!-- Главная секция -->
+    <section id="home" class="hero-section">
+      <div class="logo-container">
+        <img src="images/emilia-logo.png" alt="Emilia Logo" class="logo" />
+        <h1>Emilia</h1>
+        <p>Салон красоты</p>
+      </div>
+      <div class="text-container">
+        <h2>ГАРМОНИЯ СТИЛЯ И СОВЕРШЕНСТВА</h2>
+        <p>Скидка 10% на первое посещение салона</p>
+        <a href="#booking" class="btn btn-secondary">ОТПРАВИТЬ ЗАЯВКУ</a>
+      </div>
+      <div class="image-container">
+        <img src="images/background-image.jpg" alt="Full Image" class="full-image">
+      </div>
+    </section>
+
+    <!-- Услуги -->
+    <section id="services" class="section services-section">
+      <h2>Наши услуги</h2>
+      <div class="services-grid">
+         <div class="services-grid">
+
+      <!-- Услуга 1 -->
+      <div class="service-card">
+        <div class="service-image">
+          <img src="images/Женская стрижка.png" alt="Стрижка">
+        </div>
+        <div class="service-content">
+          <div class="service-title">Женская стрижка</div>
+          <div class="service-master">Мастер: Анна Смирнова</div>
+          <div class="service-description">
+            Современные техники стрижки волос любой длины. Подбор прически под ваш образ и стиль.
+          </div>
+        </div>
+      </div>
+
+      <!-- Услуга 2 -->
+      <div class="service-card">
+        <div class="service-image">
+          <img src="images/окрашивание волос.jpg" alt="Окрашивание">
+        </div>
+        <div class="service-content">
+          <div class="service-title">Окрашивание волос</div>
+          <div class="service-master">Мастер: Екатерина Петрова</div>
+          <div class="service-description">
+            Бережное окрашивание без аммиака. Мелирование, балаяж, тонирование на выбор.
+          </div>
+        </div>
+      </div>
+
+      <!-- Услуга 3 -->
+      <div class="service-card">
+        <div class="service-image">
+          <img src="images/укладка.jpg" alt="Укладка">
+        </div>
+        <div class="service-content">
+          <div class="service-title">Укладка волос</div>
+          <div class="service-master">Мастер: Виктория Лебедева</div>
+          <div class="service-description">
+            Создание идеальной укладки на каждый день или под важное событие.
+          </div>
+        </div>
+      </div>
+
+      <!-- Услуга 4 -->
+      <div class="service-card">
+        <div class="service-image">
+          <img src="images/аппарактный маникюр.jpg" alt="Маникюр">
+        </div>
+        <div class="service-content">
+          <div class="service-title">Аппаратный маникюр</div>
+          <div class="service-master">Мастер: Ольга Васильева</div>
+          <div class="service-description">
+            Профессиональный уход за ногтями и кутикулой. Долговечное покрытие гель-лаком.
+          </div>
+        </div>
+      </div>
+
+      <!-- Услуга 5 -->
+      <div class="service-card">
+        <div class="service-image">
+          <img src="images/spa-pedikyur.jpg" alt="Педикюр">
+        </div>
+        <div class="service-content">
+          <div class="service-title">SPA-педикюр</div>
+          <div class="service-master">Мастер: Наталья Горбунова</div>
+          <div class="service-description">
+            Расслабляющий педикюр с массажем и маской для ног. Гладкие пятки за один сеанс.
+          </div>
+        </div>
+      </div>
+
+      <!-- Услуга 6 -->
+      <div class="service-card">
+        <div class="service-image">
+          <img src="images/манияж.jpg" alt="Макияж">
+        </div>
+        <div class="service-content">
+          <div class="service-title">Дневной / вечерний макияж</div>
+          <div class="service-master">Мастер: Татьяна Соколова</div>
+          <div class="service-description">
+            Индивидуальный подход к созданию макияжа под ваш образ и тип лица.
+          </div>
+        </div>
+      </div><!-- Карточки услуг будут добавлены через JS -->
+      </div>
+    </section>
+
+    <!-- О нас -->
+    <section id="about" class="section">
+      <h2>О Нас</h2>
+      <p>Мы — профессиональный салон красоты с индивидуальным подходом к каждому клиенту.</p>
+    </section>
+
+    <!-- Отзывы -->
+    <section id="reviews" class="section">
+      <h2>Отзывы</h2>
+      <p>«Лучший салон в городе! Очень довольна результатом» – Мария</p>
+      <p>«Профессионалы своего дела!» – Анна</p>
+    </section>
+
+    <!-- Наши работы -->
+    <section id="portfolio" class="section">
+      <h2>Наши работы</h2>
+      <p>Примеры работ наших мастеров:</p>
+    </section>
+
+    <!-- Цены -->
+    <section id="prices" class="section">
+      <h2>Цены</h2>
+      <table>
+        <tr><td>Стрижка</td><td>от 1500 ₽</td></tr>
+        <tr><td>Окрашивание</td><td>от 3000 ₽</td></tr>
+        <tr><td>Маникюр</td><td>от 800 ₽</td></tr>
+      </table>
+    </section>
+
+    <!-- Контакты -->
+    <section id="contacts" class="section">
+      <h2>Контакты</h2>
+      <p>ул. Ленина, д. 10, г. Москва</p>
+      <p>Телефон: +7 (900) 123-45-67</p>
+    </section>
+
+    <!-- Форма записи -->
+    <section id="booking" class="section booking-section">
+      <h2>Записаться в салон</h2>
+      <form id="bookingForm">
+        <input type="text" placeholder="Ваше имя" required />
+        <input type="tel" placeholder="Номер телефона" required />
+        <button type="submit" class="btn btn-primary">Записаться в салон</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 Emilia Salon. Все права защищены.
+  </footer>
+
+  <script>
+    window.onload = function () {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+      const loginBtn = document.getElementById('loginButton');
+      const registerBtn = document.getElementById('registerButton');
+      const logoutBtn = document.getElementById('logoutButton');
+
+      if (currentUser) {
+        loginBtn.style.display = 'none';
+        registerBtn.style.display = 'none';
+        logoutBtn.classList.remove('hidden');
+      } else {
+        loginBtn.style.display = 'inline-block';
+        registerBtn.style.display = 'inline-block';
+        logoutBtn.classList.add('hidden');
+      }
+
+      // Выход из аккаунта
+      logoutBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        localStorage.removeItem('currentUser');
+        alert('Вы вышли из системы');
+        window.location.reload();
+      });
+
+
+      services.forEach(service => {
+        const card = document.createElement('div');
+        card.className = 'service-card';
+
+        card.innerHTML = `
+          <div class="service-image">
+            <img src="https://via.placeholder.com/400x200?text=${encodeURIComponent(service.title)}" alt="${service.title}">
+          </div>
+          <div class="service-content">
+            <div class="service-title">${service.title}</div>
+            <div class="service-master">${service.master}</div>
+            <div class="service-description">${service.desc}</div>
+          </div>
+        `;
+
+        servicesGrid.appendChild(card);
+      });
+
+      // Обработка формы записи
+      document.getElementById('bookingForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        if (!currentUser) {
+          alert('Вам нужно войти, чтобы записаться.');
+          window.location.href = 'login.html';
+          return;
+        }
+
+        alert('Заявка успешно отправлена!');
+      });
+    };
+  </script>
+</body>
+</html>

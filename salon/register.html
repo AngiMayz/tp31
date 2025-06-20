@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация - Emilia Salon</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+    <ul class="menu">
+      <li><a href="index.html" class="btn">Главная</a></li>
+    </ul>
+      
+        <div class="auth-buttons">
+          <a href="login.html" class="btn btn-auth">Войти</a>
+          <a href="register.html" class="btn btn-auth">Регистрация</a>       
+        </div>
+
+      </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <h2>Регистрация нового пользователя</h2>
+      <form id="registerForm" onsubmit="return handleRegister()">
+        <input type="text" id="registerName" placeholder="Имя" required />
+        <input type="text" id="registerUsername" placeholder="Логин" required />
+        <input type="email" id="registerEmail" placeholder="Email" required />
+        <input type="password" id="registerPassword" placeholder="Пароль" required />
+        <input type="password" id="registerConfirmPassword" placeholder="Подтвердите пароль" required />
+        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    function handleRegister() {
+      const name = document.getElementById('registerName').value;
+      const username = document.getElementById('registerUsername').value;
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+      
+      if (password !== confirmPassword) {
+        alert('Пароли не совпадают');
+        return false;
+      }
+      alert(`Пользователь ${name} успешно зарегистрирован!`);
+      window.location.href = 'login.html'; 
+      return false;
+    }
+  </script>
+</body>
+</html>
