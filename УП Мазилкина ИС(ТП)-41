@@ -1,0 +1,1076 @@
+import sys
+import sqlite3
+import os
+from datetime import datetime
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout, 
+                             QWidget, QLabel, QLineEdit, QTableWidget, QTableWidgetItem, 
+                             QMessageBox, QDialog, QHBoxLayout, QComboBox, QHeaderView,
+                             QFormLayout, QSpinBox, QTextEdit, QDateEdit)
+from PyQt5.QtCore import Qt, QDate
+from PyQt5.QtGui import QFont, QIcon, QPalette, QColor
+
+
+
+class Database:
+    _instance = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(Database, cls).__new__(cls)
+            cls._instance.initialized = False
+        return cls._instance
+    
+    def __init__(self):
+        if self.initialized:
+            return
+            
+        self.conn = sqlite3.connect('partners.db', check_same_thread=False)
+        self.cursor = self.conn.cursor()
+        self.create_tables()
+        self.check_and_fill_data()
+        self.initialized = True
+        
+        
+    def create_tables(self):
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS material_types (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                defect_percentage REAL NOT NULL
+            )
+        ''')
+        
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS product_types (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                coefficient REAL NOT NULL
+            )
+        ''')
+        
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS products (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                article TEXT NOT NULL,
+                min_price REAL NOT NULL,
+                type_id INTEGER,
+                FOREIGN KEY (type_id) REFERENCES product_types (id)
+            )
+        ''')
+        
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS partners (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                type TEXT NOT NULL,
+                name TEXT NOT NULL,
+                director TEXT NOT NULL,
+                email TEXT,
+                phone TEXT,
+                address TEXT,
+                inn TEXT,
+                rating INTEGER DEFAULT 0,
+                total_sales INTEGER DEFAULT 0
+            )
+        ''')
+        
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS sales_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                partner_id INTEGER,
+                product_name TEXT NOT NULL,
+                quantity INTEGER NOT NULL,
+                sale_date TEXT NOT NULL,
+                FOREIGN KEY (partner_id) REFERENCES partners (id)
+            )
+        ''')
+        
+        self.conn.commit()
+    
+    def check_and_fill_data(self):
+        """Проверяем и заполняем данные, если таблицы пустые"""
+        
+        self.cursor.execute("SELECT COUNT(*) FROM material_types")
+        if self.cursor.fetchone()[0] == 0:
+            material_types = [
+                ("Тип материала 1", 0.10),
+                ("Тип материала 2", 0.95),
+                ("Тип материала 3", 0.28),
+                ("Тип материала 4", 0.55),
+                ("Тип материала 5", 0.34),
+            ]
+            
+            for mt in material_types:
+                self.cursor.execute('''
+                    INSERT INTO material_types (name, defect_percentage) VALUES (?, ?)
+                ''', mt)
+        
+        self.cursor.execute("SELECT COUNT(*) FROM product_types")
+        if self.cursor.fetchone()[0] == 0:
+            product_types = [
+                ("Ламинат", 2.35),
+                ("Массивная доска", 5.15),
+                ("Паркетная доска", 4.34),
+                ("Пробковое покрытие", 1.5),
+            ]
+            
+            for pt in product_types:
+                self.cursor.execute('''
+                    INSERT INTO product_types (name, coefficient) VALUES (?, ?)
+                ''', pt)
+        
+        self.cursor.execute("SELECT COUNT(*) FROM products")
+        if self.cursor.fetchone()[0] == 0:
+            products = [
+                ("Паркетная доска Ясень темный однополосная 14 мм", "8758385", 4456.90, 3),
+                ("Инженерная доска Дуб Французская елка однополосная 12 мм", "8858958", 7330.99, 3),
+                ("Ламинат Дуб дымчато-белый 33 класс 12 мм", "7750282", 1799.33, 1),
+                ("Ламинат Дуб серый 32 класс 8 мм с фаской", "7028748", 3890.41, 1),
+                ("Пробковое напольное клеевое покрытие 32 класс 4 мм", "5012543", 5450.59, 4),
+            ]
+            
+            for product in products:
+                self.cursor.execute('''
+                    INSERT INTO products (name, article, min_price, type_id) VALUES (?, ?, ?, ?)
+                ''', product)
+        
+        self.cursor.execute("SELECT COUNT(*) FROM partners")
+        if self.cursor.fetchone()[0] == 0:
+            partners = [
+                ("ЗАО", "База Строитель", "Иванова Александра Ивановна", 
+                 "aleksandraivanova@ml.ru", "493 123 45 67", 
+                 "652050, Кемеровская область, город Юрга, ул. Лесная, 15", 
+                 "2222455179", 7, 65250),
+                
+                ("ООО", "Паркет 29", "Петров Василий Петрович", 
+                 "vppetrov@vl.ru", "987 123 56 78", 
+                 "164500, Архангельская область, город Северодвинск, ул. Строителей, 18", 
+                 "3333888520", 7, 44750),
+                
+                ("ПАО", "Стройсервис", "Соловьев Андрей Николаевич", 
+                 "ansolovev@st.ru", "812 223 32 00", 
+                 "188910, Ленинградская область, город Приморск, ул. Парковая, 21", 
+                 "4440391035", 7, 9750),
+                
+                ("ОАО", "Ремонт и отделка", "Воробьева Екатерина Валерьевна", 
+                 "ekaterina.vorobeva@ml.ru", "444 222 33 11", 
+                 "143960, Московская область, город Реутов, ул. Свободы, 51", 
+                 "1111520857", 5, 100750),
+                
+                ("ЗАО", "МонтажПро", "Степанов Степан Сергеевич", 
+                 "stepanov@stepan.ru", "912 888 33 33", 
+                 "309500, Белгородская область, город Старый Оскол, ул. Рабочая, 122", 
+                 "5552431140", 10, 755000),
+            ]
+            
+            for partner in partners:
+                self.cursor.execute('''
+                    INSERT INTO partners (type, name, director, email, phone, address, inn, rating, total_sales)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', partner)
+        
+        self.cursor.execute("SELECT COUNT(*) FROM sales_history")
+        if self.cursor.fetchone()[0] == 0:
+            sales_history = [
+                (1, "Паркетная доска Ясень темный однополосная 14 мм", 15500, "2023-03-23"),
+                (1, "Ламинат Дуб дымчато-белый 33 класс 12 мм", 12350, "2023-12-18"),
+                (1, "Ламинат Дуб серый 32 класс 8 мм с фаской", 37400, "2024-06-07"),
+                (2, "Инженерная доска Дуб Французская елка однополосная 12 мм", 35000, "2022-12-02"),
+                (2, "Пробковое напольное клеевое покрытие 32 класс 4 мм", 1250, "2023-05-17"),
+                (2, "Ламинат Дуб дымчато-белый 33 класс 12 мм", 1000, "2024-06-07"),
+                (2, "Паркетная доска Ясень темный однополосная 14 мм", 7550, "2024-07-01"),
+                (3, "Паркетная доска Ясень темный однополосная 14 мм", 7250, "2023-01-22"),
+                (3, "Инженерная доска Дуб Французская елка однополосная 12 мм", 2500, "2024-07-05"),
+                (4, "Ламинат Дуб серый 32 класс 8 мм с фаской", 59050, "2023-03-20"),
+                (4, "Ламинат Дуб дымчато-белый 33 класс 12 мм", 37200, "2024-03-12"),
+                (4, "Пробковое напольное клеевое покрытие 32 класс 4 мм", 4500, "2024-05-14"),
+                (5, "Ламинат Дуб дымчато-белый 33 класс 12 мм", 50000, "2023-09-19"),
+                (5, "Ламинат Дуб серый 32 класс 8 мм с фаской", 670000, "2023-11-10"),
+                (5, "Паркетная доска Ясень темный однополосная 14 мм", 35000, "2024-04-15"),
+                (5, "Инженерная доска Дуб Французская елка однополосная 12 мм", 25000, "2024-06-12"),
+            ]
+            
+            for sale in sales_history:
+                self.cursor.execute('''
+                    INSERT INTO sales_history (partner_id, product_name, quantity, sale_date)
+                    VALUES (?, ?, ?, ?)
+                ''', sale)
+        
+        self.conn.commit()
+    
+    def get_all_partners(self):
+        self.cursor.execute("SELECT * FROM partners ORDER BY name")
+        return self.cursor.fetchall()
+    
+    def get_partner_by_id(self, partner_id):
+        self.cursor.execute("SELECT * FROM partners WHERE id=?", (partner_id,))
+        return self.cursor.fetchone()
+    
+    def add_partner(self, partner_type, name, director, email, phone, address, inn, rating):
+        self.cursor.execute('''
+            INSERT INTO partners (type, name, director, email, phone, address, inn, rating, total_sales)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
+        ''', (partner_type, name, director, email, phone, address, inn, rating))
+        self.conn.commit()
+    
+    def update_partner(self, partner_id, partner_type, name, director, email, phone, address, inn, rating):
+        self.cursor.execute('''
+            UPDATE partners 
+            SET type=?, name=?, director=?, email=?, phone=?, address=?, inn=?, rating=?
+            WHERE id=?
+        ''', (partner_type, name, director, email, phone, address, inn, rating, partner_id))
+        self.conn.commit()
+    
+    def get_partner_sales_history(self, partner_id):
+        self.cursor.execute('''
+            SELECT product_name, quantity, sale_date 
+            FROM sales_history 
+            WHERE partner_id=? 
+            ORDER BY sale_date DESC
+        ''', (partner_id,))
+        return self.cursor.fetchall()
+    
+    def add_sale(self, partner_id, product_name, quantity, sale_date):
+        self.cursor.execute('''
+            INSERT INTO sales_history (partner_id, product_name, quantity, sale_date)
+            VALUES (?, ?, ?, ?)
+        ''', (partner_id, product_name, quantity, sale_date))
+        
+        self.cursor.execute('''
+            UPDATE partners SET total_sales = total_sales + ? WHERE id=?
+        ''', (quantity, partner_id))
+        
+        self.conn.commit()
+    
+    def get_all_products(self):
+        self.cursor.execute("SELECT name FROM products ORDER BY name")
+        return [row[0] for row in self.cursor.fetchall()]
+    
+    def get_partner_types(self):
+        return ["ЗАО", "ООО", "ПАО", "ОАО", "ИП", "ТОО"]
+    
+    def calculate_discount(self, total_sales):
+        """Расчет скидки на основе объема продаж"""
+        if total_sales < 10000:
+            return 0
+        elif total_sales < 50000:
+            return 5
+        elif total_sales < 300000:
+            return 10
+        else:
+            return 15
+    
+    def get_product_type_coefficient(self, product_type_id):
+        self.cursor.execute("SELECT coefficient FROM product_types WHERE id=?", (product_type_id,))
+        result = self.cursor.fetchone()
+        return result[0] if result else None
+    
+    def get_material_defect_percentage(self, material_type_id):
+        self.cursor.execute("SELECT defect_percentage FROM material_types WHERE id=?", (material_type_id,))
+        result = self.cursor.fetchone()
+        return result[0] if result else None
+    
+    def get_product_type_id_by_name(self, product_name):
+        self.cursor.execute('''
+            SELECT pt.id FROM products p
+            JOIN product_types pt ON p.type_id = pt.id
+            WHERE p.name = ?
+        ''', (product_name,))
+        result = self.cursor.fetchone()
+        return result[0] if result else None
+    
+    def get_product_by_name(self, product_name):
+        self.cursor.execute("SELECT * FROM products WHERE name=?", (product_name,))
+        return self.cursor.fetchone()
+    
+    def calculate_material_required(self, product_name, material_type_id, 
+                                  product_quantity, param1, param2):
+        """
+        Расчет необходимого количества материала
+        
+        Args:
+            product_name: название продукции
+            material_type_id: ID типа материала (1-5)
+            product_quantity: количество продукции
+            param1, param2: параметры продукции
+            
+        Returns:
+            Количество материала или -1 при ошибке
+        """
+        if (product_quantity <= 0 or param1 <= 0 or param2 <= 0 or 
+            material_type_id <= 0 or material_type_id > 5):
+            return -1
+        
+        product_type_id = self.get_product_type_id_by_name(product_name)
+        if not product_type_id:
+            return -1
+        
+        product_coeff = self.get_product_type_coefficient(product_type_id)
+        defect_percent = self.get_material_defect_percentage(material_type_id)
+        
+        if product_coeff is None or defect_percent is None:
+            return -1
+        
+        material_per_unit = param1 * param2 * product_coeff
+        
+        total_material = material_per_unit * product_quantity
+        
+        material_with_defect = total_material * (1 + defect_percent / 100)
+        
+        return int(material_with_defect) + (1 if material_with_defect % 1 > 0 else 0)
+
+
+class PartnerForm(QDialog):
+    def __init__(self, partner_id=None, parent=None):
+        super().__init__(parent)
+        self.partner_id = partner_id
+        self.db = Database()
+        self.init_ui()
+        
+    def init_ui(self):
+        title = "Редактировать партнера" if self.partner_id else "Добавить партнера"
+        self.setWindowTitle(title)
+        self.setGeometry(300, 300, 500, 550)
+        
+        self.setStyleSheet("""
+            QDialog {
+                background-color: #FFFFFF;  /* Основной фон - белый */
+            }
+            QLabel {
+                color: #67BA80;  /* Акцентный зеленый текст */
+                font-weight: bold;
+                font-size: 10pt;
+            }
+            QLineEdit, QTextEdit, QSpinBox, QComboBox {
+                background-color: #FFFFFF;
+                border: 2px solid #67BA80;  /* Зеленая рамка */
+                border-radius: 5px;
+                padding: 5px;
+                font-size: 10pt;
+            }
+            QLineEdit:focus, QTextEdit:focus, QSpinBox:focus, QComboBox:focus {
+                border: 2px solid #4CAF50;  /* Ярко-зеленая при фокусе */
+            }
+            QPushButton {
+                background-color: #67BA80;  /* Акцентный зеленый */
+                border: 2px solid #4CAF50;
+                border-radius: 5px;
+                padding: 10px;
+                font-weight: bold;
+                color: white;
+                font-size: 11pt;
+            }
+            QPushButton:hover {
+                background-color: #4CAF50;  /* Более яркий зеленый при наведении */
+            }
+            QPushButton:pressed {
+                background-color: #3D8B40;  /* Темный зеленый при нажатии */
+            }
+            QSpinBox::up-button, QSpinBox::down-button {
+                background-color: #67BA80;
+                border: 1px solid #4CAF50;
+                border-radius: 3px;
+            }
+            QComboBox::drop-down {
+                border: none;
+                background-color: #67BA80;
+            }
+            QComboBox::down-arrow {
+                image: none;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                border-top: 5px solid white;
+            }
+        """)
+        
+        layout = QVBoxLayout()
+        
+        form_layout = QFormLayout()
+        
+        self.type_combo = QComboBox()
+        self.type_combo.addItems(self.db.get_partner_types())
+        form_layout.addRow("Тип партнера:", self.type_combo)
+        
+        self.name_input = QLineEdit()
+        form_layout.addRow("Наименование партнера:", self.name_input)
+        
+        self.director_input = QLineEdit()
+        form_layout.addRow("ФИО директора:", self.director_input)
+        
+        self.email_input = QLineEdit()
+        form_layout.addRow("Электронная почта:", self.email_input)
+        
+        self.phone_input = QLineEdit()
+        form_layout.addRow("Телефон партнера:", self.phone_input)
+        
+        self.address_input = QTextEdit()
+        self.address_input.setMaximumHeight(60)
+        form_layout.addRow("Юридический адрес:", self.address_input)
+        
+        self.inn_input = QLineEdit()
+        form_layout.addRow("ИНН:", self.inn_input)
+        
+        self.rating_input = QSpinBox()
+        self.rating_input.setMinimum(0)
+        self.rating_input.setMaximum(10)
+        form_layout.addRow("Рейтинг:", self.rating_input)
+        
+        if self.partner_id:
+            self.discount_label = QLabel("")
+            form_layout.addRow("Текущая скидка:", self.discount_label)
+        
+        layout.addLayout(form_layout)
+        
+        button_layout = QHBoxLayout()
+        self.save_button = QPushButton("💾 Сохранить")
+        self.save_button.clicked.connect(self.save_partner)
+        self.cancel_button = QPushButton("❌ Отмена")
+        self.cancel_button.clicked.connect(self.reject)
+        
+        button_layout.addWidget(self.save_button)
+        button_layout.addWidget(self.cancel_button)
+        layout.addLayout(button_layout)
+        
+        self.setLayout(layout)
+        
+        if self.partner_id:
+            self.load_partner_data()
+    
+    def load_partner_data(self):
+        partner = self.db.get_partner_by_id(self.partner_id)
+        
+        if partner:
+            index = self.type_combo.findText(partner[1])
+            if index >= 0:
+                self.type_combo.setCurrentIndex(index)
+            self.name_input.setText(partner[2])
+            self.director_input.setText(partner[3])
+            self.email_input.setText(partner[4])
+            self.phone_input.setText(partner[5])
+            self.address_input.setText(partner[6])
+            self.inn_input.setText(partner[7])
+            self.rating_input.setValue(partner[8])
+            
+            discount = self.db.calculate_discount(partner[9])
+            self.discount_label.setText(f"{discount}% (продажи: {partner[9]} ед.)")
+    
+    def save_partner(self):
+        if not self.name_input.text().strip():
+            QMessageBox.warning(self, "Ошибка", "Введите наименование партнера")
+            return
+        
+        if not self.director_input.text().strip():
+            QMessageBox.warning(self, "Ошибка", "Введите ФИО директора")
+            return
+        
+        if not self.inn_input.text().strip():
+            QMessageBox.warning(self, "Ошибка", "Введите ИНН")
+            return
+        
+        db = Database()
+        
+        if self.partner_id: 
+            db.update_partner(
+                self.partner_id,
+                self.type_combo.currentText(),
+                self.name_input.text(),
+                self.director_input.text(),
+                self.email_input.text(),
+                self.phone_input.text(),
+                self.address_input.toPlainText(),
+                self.inn_input.text(),
+                self.rating_input.value()
+            )
+        else: 
+            db.add_partner(
+                self.type_combo.currentText(),
+                self.name_input.text(),
+                self.director_input.text(),
+                self.email_input.text(),
+                self.phone_input.text(),
+                self.address_input.toPlainText(),
+                self.inn_input.text(),
+                self.rating_input.value()
+            )
+        
+        self.accept()
+
+
+class SalesHistoryDialog(QDialog):
+    def __init__(self, partner_id, partner_name, parent=None):
+        super().__init__(parent)
+        self.partner_id = partner_id
+        self.partner_name = partner_name
+        self.db = Database()
+        self.init_ui()
+        
+    def init_ui(self):
+        self.setWindowTitle(f"История продаж - {self.partner_name}")
+        self.setGeometry(400, 200, 700, 500)
+        
+        self.setStyleSheet("""
+            QDialog {
+                background-color: #FFFFFF;
+            }
+            QLabel {
+                color: #67BA80;
+                font-weight: bold;
+            }
+            QLineEdit, QTextEdit, QSpinBox, QComboBox, QDateEdit {
+                background-color: #FFFFFF;
+                border: 2px solid #67BA80;
+                border-radius: 5px;
+                padding: 5px;
+            }
+            QPushButton {
+                background-color: #67BA80;
+                border: 2px solid #4CAF50;
+                border-radius: 5px;
+                padding: 8px;
+                font-weight: bold;
+                color: white;
+            }
+            QPushButton:hover {
+                background-color: #4CAF50;
+            }
+            QTableWidget {
+                background-color: #FFFFFF;
+                alternate-background-color: #F4E8D3;  /* Бежевый для чередующихся строк */
+                gridline-color: #67BA80;
+                font-size: 10pt;
+            }
+            QTableWidget::item {
+                padding: 5px;
+            }
+            QTableWidget::item:selected {
+                background-color: #67BA80;
+                color: white;
+            }
+            QHeaderView::section {
+                background-color: #67BA80;
+                color: white;
+                padding: 5px;
+                border: 1px solid #4CAF50;
+                font-weight: bold;
+            }
+            QSpinBox::up-button, QSpinBox::down-button {
+                background-color: #67BA80;
+                border: 1px solid #4CAF50;
+            }
+        """)
+        
+        layout = QVBoxLayout()
+        
+        self.table = QTableWidget()
+        self.table.setColumnCount(4)
+        self.table.setHorizontalHeaderLabels(["Продукция", "Количество", "Дата продажи", "Сумма (руб)"])
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table.setAlternatingRowColors(True)
+        
+        layout.addWidget(self.table)
+        
+        form_layout = QFormLayout()
+        
+        self.product_combo = QComboBox()
+        self.product_combo.addItems(self.db.get_all_products())
+        form_layout.addRow("Продукция:", self.product_combo)
+        
+        self.quantity_input = QSpinBox()
+        self.quantity_input.setMinimum(1)
+        self.quantity_input.setMaximum(1000000)
+        self.quantity_input.setValue(1000)
+        form_layout.addRow("Количество (ед.):", self.quantity_input)
+        
+        self.date_input = QDateEdit()
+        self.date_input.setCalendarPopup(True)
+        self.date_input.setDate(QDate.currentDate())
+        self.date_input.setDisplayFormat("dd.MM.yyyy")
+        form_layout.addRow("Дата продажи:", self.date_input)
+        
+        layout.addLayout(form_layout)
+        
+        button_layout = QHBoxLayout()
+        self.add_sale_button = QPushButton("➕ Добавить продажу")
+        self.add_sale_button.clicked.connect(self.add_sale)
+        self.close_button = QPushButton("❌ Закрыть")
+        self.close_button.clicked.connect(self.accept)
+        
+        button_layout.addWidget(self.add_sale_button)
+        button_layout.addWidget(self.close_button)
+        layout.addLayout(button_layout)
+        
+        self.setLayout(layout)
+        self.load_sales_history()
+    
+    def load_sales_history(self):
+        sales = self.db.get_partner_sales_history(self.partner_id)
+        self.table.setRowCount(len(sales))
+        
+        total_value = 0
+        for row, sale in enumerate(sales):
+            product_name, quantity, date = sale
+            
+            product_info = self.db.get_product_by_name(product_name)
+            price = product_info[3] if product_info else 0 
+            item_value = price * quantity
+            
+            self.table.setItem(row, 0, QTableWidgetItem(product_name))
+            self.table.setItem(row, 1, QTableWidgetItem(f"{quantity:,}".replace(",", " ")))
+            self.table.setItem(row, 2, QTableWidgetItem(date))
+            self.table.setItem(row, 3, QTableWidgetItem(f"{item_value:,.2f}".replace(",", " ").replace(".", ",")))
+            
+            total_value += item_value
+        
+        self.table.insertRow(len(sales))
+        self.table.setItem(len(sales), 0, QTableWidgetItem("ИТОГО:"))
+        self.table.setItem(len(sales), 3, QTableWidgetItem(f"{total_value:,.2f}".replace(",", " ").replace(".", ",")))
+       
+        for col in range(4):
+            item = self.table.item(len(sales), col)
+            if item:
+                item.setFont(QFont("Arial", 10, QFont.Bold))
+                item.setForeground(QColor("#67BA80"))
+                if col == 0 or col == 3:
+                    item.setBackground(QColor("#F4E8D3"))
+    
+    def add_sale(self):
+        product = self.product_combo.currentText()
+        quantity = self.quantity_input.value()
+        sale_date = self.date_input.date().toString("yyyy-MM-dd")
+        
+        self.db.add_sale(self.partner_id, product, quantity, sale_date)
+        self.load_sales_history()
+        
+        if self.parent():
+            self.parent().load_partners()
+
+
+class MaterialCalculatorDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.db = Database()
+        self.init_ui()
+        
+    def init_ui(self):
+        self.setWindowTitle("🧮 Калькулятор материалов для производства")
+        self.setGeometry(400, 200, 500, 450)
+        
+        self.setStyleSheet("""
+            QDialog {
+                background-color: #FFFFFF;
+            }
+            QLabel {
+                color: #67BA80;
+                font-weight: bold;
+            }
+            QLineEdit, QTextEdit, QSpinBox, QComboBox {
+                background-color: #FFFFFF;
+                border: 2px solid #67BA80;
+                border-radius: 5px;
+                padding: 5px;
+            }
+            QPushButton {
+                background-color: #67BA80;
+                border: 2px solid #4CAF50;
+                border-radius: 5px;
+                padding: 10px;
+                font-weight: bold;
+                color: white;
+                font-size: 11pt;
+            }
+            QPushButton:hover {
+                background-color: #4CAF50;
+            }
+            QPushButton:pressed {
+                background-color: #3D8B40;
+            }
+            #result_label {
+                background-color: #F4E8D3;  /* Бежевый фон для результата */
+                border: 2px solid #67BA80;
+                border-radius: 5px;
+                padding: 10px;
+            }
+        """)
+        
+        layout = QVBoxLayout()
+        
+        form_layout = QFormLayout()
+        
+        self.product_combo = QComboBox()
+        self.product_combo.addItems(self.db.get_all_products())
+        self.product_combo.currentTextChanged.connect(self.update_product_info)
+        form_layout.addRow("Продукция:", self.product_combo)
+        
+        self.product_info_label = QLabel("")
+        self.product_info_label.setStyleSheet("color: #4CAF50; font-style: italic;")
+        form_layout.addRow("Тип продукции:", self.product_info_label)
+        
+        self.material_combo = QComboBox()
+        materials = ["Тип материала 1 (0,10%)", 
+                    "Тип материала 2 (0,95%)", 
+                    "Тип материала 3 (0,28%)", 
+                    "Тип материала 4 (0,55%)", 
+                    "Тип материала 5 (0,34%)"]
+        self.material_combo.addItems(materials)
+        form_layout.addRow("Тип материала:", self.material_combo)
+        
+        self.quantity_input = QSpinBox()
+        self.quantity_input.setMinimum(1)
+        self.quantity_input.setMaximum(1000000)
+        self.quantity_input.setValue(100)
+        form_layout.addRow("Количество продукции (ед.):", self.quantity_input)
+        
+        self.param1_input = QLineEdit("1.0")
+        self.param1_input.setPlaceholderText("Параметр 1 (м)")
+        form_layout.addRow("Параметр 1:", self.param1_input)
+        
+        self.param2_input = QLineEdit("1.0")
+        self.param2_input.setPlaceholderText("Параметр 2 (м)")
+        form_layout.addRow("Параметр 2:", self.param2_input)
+        
+        layout.addLayout(form_layout)
+        
+        self.result_label = QLabel("")
+        self.result_label.setFont(QFont("Arial", 11, QFont.Bold))
+        self.result_label.setObjectName("result_label")
+        self.result_label.setAlignment(Qt.AlignCenter)
+        self.result_label.setWordWrap(True)
+        layout.addWidget(self.result_label)
+        
+        button_layout = QHBoxLayout()
+        self.calculate_button = QPushButton("🧮 Рассчитать материал")
+        self.calculate_button.clicked.connect(self.calculate)
+        self.close_button = QPushButton("❌ Закрыть")
+        self.close_button.clicked.connect(self.accept)
+        
+        button_layout.addWidget(self.calculate_button)
+        button_layout.addWidget(self.close_button)
+        layout.addLayout(button_layout)
+        
+        self.setLayout(layout)
+        self.update_product_info()
+    
+    def update_product_info(self):
+        product_name = self.product_combo.currentText()
+        product_info = self.db.get_product_by_name(product_name)
+        if product_info:
+
+            product_type_id = product_info[4]
+            product_type_coeff = self.db.get_product_type_coefficient(product_type_id)
+            
+            self.db.cursor.execute("SELECT name FROM product_types WHERE id=?", (product_type_id,))
+            type_name = self.db.cursor.fetchone()[0]
+            
+            self.product_info_label.setText(f"{type_name} (коэфф.: {product_type_coeff})")
+    
+    def calculate(self):
+        try:
+            product_name = self.product_combo.currentText()
+            material_type_id = self.material_combo.currentIndex() + 1  # 1-5
+            product_quantity = self.quantity_input.value()
+            param1 = float(self.param1_input.text().replace(",", "."))
+            param2 = float(self.param2_input.text().replace(",", "."))
+            
+            result = self.db.calculate_material_required(
+                product_name, material_type_id, product_quantity, param1, param2
+            )
+            
+            if result == -1:
+                self.result_label.setText("❌ Ошибка: проверьте входные данные")
+                self.result_label.setStyleSheet("""
+                    #result_label {
+                        color: #FF6B6B;
+                        background-color: #FFE8E8;
+                        border: 2px solid #FF6B6B;
+                        padding: 10px;
+                    }
+                """)
+            else:
+                material_name = self.material_combo.currentText().split(" ")[2]
+                percent = self.material_combo.currentText().split('(')[1][:-1]
+                self.result_label.setText(
+                    f"📊 Для производства {product_quantity:,} ед. продукции\n"
+                    f"📦 '{product_name}'\n"
+                    f"⚙️ Требуется {result:,} ед. материала {material_name}\n"
+                    f"📈 (с учетом брака {percent})"
+                )
+                self.result_label.setStyleSheet("""
+                    #result_label {
+                        color: #2E8B57;
+                        background-color: #F4E8D3;
+                        border: 2px solid #67BA80;
+                        padding: 10px;
+                    }
+                """)
+                
+        except ValueError:
+            QMessageBox.warning(self, "Ошибка", "Введите корректные числовые значения параметров")
+
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.db = Database()
+        self.selected_partner_id = None
+        self.init_ui()
+        
+    def init_ui(self):
+        self.setWindowIcon(QIcon("python.png"))
+        self.setWindowTitle("Система управления партнерами компании")
+        self.setGeometry(100, 100, 1200, 700)
+        
+        self.setStyleSheet("""
+            QMainWindow, QWidget {
+                background-color: #FFFFFF;  /* Основной фон */
+            }
+            QLabel#title_label {
+                color: #67BA80;
+                font-size: 20pt;
+                padding: 15px;
+                background-color: #F4E8D3;  /* Бежевый фон для заголовка */
+                border-radius: 10px;
+                margin: 5px;
+            }
+            QPushButton {
+                background-color: #67BA80;  /* Акцентный зеленый */
+                border: 2px solid #4CAF50;
+                border-radius: 5px;
+                padding: 8px 15px;
+                font-weight: bold;
+                color: white;
+                font-size: 10pt;
+            }
+            QPushButton:hover {
+                background-color: #4CAF50;  /* Более яркий зеленый при наведении */
+            }
+            QPushButton:pressed {
+                background-color: #3D8B40;  /* Темный зеленый при нажатии */
+            }
+            QPushButton:disabled {
+                background-color: #C8E6C9;
+                color: #81C784;
+                border: 2px solid #A5D6A7;
+            }
+            QTableWidget {
+                background-color: #FFFFFF;
+                alternate-background-color: #F4E8D3;  /* Бежевый для чередующихся строк */
+                gridline-color: #E0E0E0;
+                font-size: 10pt;
+                border: 2px solid #67BA80;
+                border-radius: 5px;
+            }
+            QTableWidget::item {
+                padding: 5px;
+            }
+            QTableWidget::item:selected {
+                background-color: #67BA80;
+                color: white;
+            }
+            QHeaderView::section {
+                background-color: #67BA80;
+                color: white;
+                padding: 8px;
+                border: 1px solid #4CAF50;
+                font-weight: bold;
+                font-size: 10pt;
+            }
+            QStatusBar {
+                background-color: #F4E8D3;
+                color: #67BA80;
+                font-weight: bold;
+                border-top: 2px solid #67BA80;
+            }
+            QSpinBox, QComboBox, QLineEdit, QDateEdit {
+                border: 2px solid #67BA80;
+                border-radius: 5px;
+                padding: 3px;
+                background-color: white;
+            }
+            QMessageBox {
+                background-color: #FFFFFF;
+            }
+            QMessageBox QLabel {
+                color: #67BA80;
+            }
+            QMessageBox QPushButton {
+                min-width: 80px;
+            }
+        """)
+        
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        
+        main_layout = QVBoxLayout()
+        
+        title_label = QLabel("📊 Учет партнеров компании")
+        title_label.setObjectName("title_label")
+        title_label.setFont(QFont("Arial", 18, QFont.Bold))
+        title_label.setAlignment(Qt.AlignCenter)
+        main_layout.addWidget(title_label)
+        
+        self.table = QTableWidget()
+        self.table.setColumnCount(11)
+        self.table.setHorizontalHeaderLabels([
+            "ID", "Тип", "Наименование партнера", "Директор", "Email", 
+            "Телефон", "Адрес", "ИНН", "Рейтинг", "Объем продаж", "Скидка"
+        ])
+        self.table.setAlternatingRowColors(True)
+    
+        header = self.table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)  
+        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)  
+        header.setSectionResizeMode(2, QHeaderView.Stretch)         
+        header.setSectionResizeMode(3, QHeaderView.ResizeToContents) 
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents) 
+        header.setSectionResizeMode(5, QHeaderView.ResizeToContents) 
+        header.setSectionResizeMode(8, QHeaderView.ResizeToContents) 
+        header.setSectionResizeMode(9, QHeaderView.ResizeToContents) 
+        header.setSectionResizeMode(10, QHeaderView.ResizeToContents)
+        
+        self.table.cellClicked.connect(self.on_partner_clicked)
+        self.table.cellDoubleClicked.connect(self.edit_partner)
+        
+        main_layout.addWidget(self.table)
+        
+        button_layout = QHBoxLayout()
+        
+        self.add_button = QPushButton("➕ Добавить партнера")
+        self.add_button.clicked.connect(self.add_partner)
+        button_layout.addWidget(self.add_button)
+        
+        self.edit_button = QPushButton("✏️ Редактировать")
+        self.edit_button.clicked.connect(self.edit_partner)
+        self.edit_button.setEnabled(False)
+        button_layout.addWidget(self.edit_button)
+        
+        self.sales_button = QPushButton("📈 История продаж")
+        self.sales_button.clicked.connect(self.show_sales_history)
+        self.sales_button.setEnabled(False)
+        button_layout.addWidget(self.sales_button)
+        
+        self.calc_button = QPushButton("🧮 Калькулятор материалов")
+        self.calc_button.clicked.connect(self.show_calculator)
+        button_layout.addWidget(self.calc_button)
+        
+        self.refresh_button = QPushButton("🔄 Обновить")
+        self.refresh_button.clicked.connect(self.load_partners)
+        button_layout.addWidget(self.refresh_button)
+        
+        main_layout.addLayout(button_layout)
+        
+        self.status_label = QLabel("✅ Готово")
+        self.status_bar = self.statusBar()
+        self.status_bar.addWidget(self.status_label)
+        
+        central_widget.setLayout(main_layout)
+        self.load_partners()
+    
+    def load_partners(self):
+        partners = self.db.get_all_partners()
+        self.table.setRowCount(len(partners))
+        
+        for row, partner in enumerate(partners):
+            partner_id, ptype, name, director, email, phone, address, inn, rating, total_sales = partner
+            discount = self.db.calculate_discount(total_sales)
+            
+            total_sales_str = f"{total_sales:,}".replace(",", " ")
+            
+            self.table.setItem(row, 0, QTableWidgetItem(str(partner_id)))
+            self.table.setItem(row, 1, QTableWidgetItem(ptype))
+            self.table.setItem(row, 2, QTableWidgetItem(name))
+            self.table.setItem(row, 3, QTableWidgetItem(director))
+            self.table.setItem(row, 4, QTableWidgetItem(email))
+            self.table.setItem(row, 5, QTableWidgetItem(phone))
+            self.table.setItem(row, 6, QTableWidgetItem(address))
+            self.table.setItem(row, 7, QTableWidgetItem(inn))
+            self.table.setItem(row, 8, QTableWidgetItem(str(rating)))
+            self.table.setItem(row, 9, QTableWidgetItem(total_sales_str))
+            self.table.setItem(row, 10, QTableWidgetItem(f"{discount}%"))
+            
+            if discount >= 10:
+                for col in range(11):
+                    item = self.table.item(row, col)
+                    if item:
+                        item.setBackground(QColor("#67BA80"))  
+                        item.setForeground(Qt.white)
+            elif discount >= 5:
+                for col in range(11):
+                    item = self.table.item(row, col)
+                    if item:
+                        item.setBackground(QColor("#F4E8D3")) 
+                        item.setForeground(QColor("#2E8B57"))
+            
+            rating_item = self.table.item(row, 8)
+            if rating_item:
+                rating_value = rating
+                if rating_value >= 9:
+                    rating_item.setForeground(QColor("#2E8B57"))
+                    rating_item.setFont(QFont("Arial", 10, QFont.Bold))
+                elif rating_value <= 5:
+                    rating_item.setForeground(QColor("#FF6B6B")) 
+        
+        self.status_label.setText(f"✅ Загружено {len(partners)} партнеров")
+    
+    def on_partner_clicked(self, row, column):
+        self.selected_partner_id = int(self.table.item(row, 0).text())
+        self.edit_button.setEnabled(True)
+        self.sales_button.setEnabled(True)
+        
+        partner_name = self.table.item(row, 2).text()
+        self.status_label.setText(f"📌 Выбран партнер: {partner_name}")
+    
+    def add_partner(self):
+        dialog = PartnerForm(parent=self)
+        if dialog.exec_():
+            self.load_partners()
+            self.status_label.setText("✅ Партнер успешно добавлен")
+    
+    def edit_partner(self):
+        if not self.selected_partner_id:
+            row = self.table.currentRow()
+            if row >= 0:
+                self.selected_partner_id = int(self.table.item(row, 0).text())
+        
+        if self.selected_partner_id:
+            dialog = PartnerForm(self.selected_partner_id, self)
+            if dialog.exec_():
+                self.load_partners()
+                self.status_label.setText("✅ Данные партнера обновлены")
+    
+    def show_sales_history(self):
+        if self.selected_partner_id:
+            row = self.table.currentRow()
+            partner_name = self.table.item(row, 2).text()
+            dialog = SalesHistoryDialog(self.selected_partner_id, partner_name, self)
+            dialog.exec_()
+            self.status_label.setText(f"📊 История продаж для {partner_name}")
+    
+    def show_calculator(self):
+        dialog = MaterialCalculatorDialog(self)
+        dialog.exec_()
+        self.status_label.setText("✅ Калькулятор материалов закрыт")
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    app.setStyle("Fusion")
+    
+    palette = QPalette()
+    palette.setColor(QPalette.Window, QColor("#FFFFFF")) 
+    palette.setColor(QPalette.WindowText, QColor("#67BA80"))  
+    palette.setColor(QPalette.Base, QColor("#FFFFFF"))  
+    palette.setColor(QPalette.AlternateBase, QColor("#F4E8D3")) 
+    palette.setColor(QPalette.ToolTipBase, QColor("#67BA80"))
+    palette.setColor(QPalette.ToolTipText, Qt.white)
+    palette.setColor(QPalette.Text, QColor("#2E8B57"))  
+    palette.setColor(QPalette.Button, QColor("#67BA80"))  
+    palette.setColor(QPalette.ButtonText, Qt.white)  
+    palette.setColor(QPalette.BrightText, Qt.red)
+    palette.setColor(QPalette.Link, QColor("#4CAF50"))
+    palette.setColor(QPalette.Highlight, QColor("#67BA80"))  
+    palette.setColor(QPalette.HighlightedText, Qt.white)
+    app.setPalette(palette)
+    
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
